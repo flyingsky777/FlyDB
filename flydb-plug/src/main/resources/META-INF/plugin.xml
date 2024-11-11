@@ -1,30 +1,23 @@
-<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-  <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-  <id>com.flydb.flydb-plug</id>
+    <id>com.flydb.flydb-plug</id>
 
-  <!-- Public plugin name should be written in Title Case.
-       Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-  <name>Flydb-plug</name>
+    <name>FlyDB</name>
 
-  <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-  <vendor email="support@yourcompany.com" url="https://www.yourcompany.com">YourCompany</vendor>
+    <vendor email="582626764@qq.com" url="https://www.flydb.com">FlyDB</vendor>
 
-  <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
-       Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
-       Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-  <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
-  ]]></description>
+    <!-- 插件的描述，在插件发布后会在插件首页显示 -->
+    <description>
+        FlyDB 是一个数据库版本管理工具, 支持数据库文件版本管理，相当于Flyway liquibase 更方便快捷
+    </description>
 
-  <!-- Product and plugin compatibility requirements.
-       Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
-  <depends>com.intellij.modules.platform</depends>
+    <!-- 插件的依赖配置， 任何插件都应该配置platform， 才可以使用一些基本的功能 -->
+    <depends>com.intellij.modules.platform</depends>
 
-  <!-- Extension points defined by the plugin.
-       Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
-  <extensions defaultExtensionNs="com.intellij">
+    <!--插件扩展点配置， 后面我们的一些扩展会在这里配置 -->
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="httpRunner" factoryClass="com.dadada.plugin.httprunner.HttpRunnerToolWindowFactory"  anchor="bottom"/>
+    </extensions>
 
-  </extensions>
+    <!-- 插件的兼容版本，这里使用的是build number -->
+    <idea-version since-build="203" until-build="232.*"/>
 </idea-plugin>
