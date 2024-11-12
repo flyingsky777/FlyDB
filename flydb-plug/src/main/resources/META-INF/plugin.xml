@@ -1,4 +1,6 @@
 <idea-plugin>
+
+
     <id>com.flydb.flydb-plug</id>
 
     <name>FlyDB</name>
@@ -15,9 +17,10 @@
 
     <!--插件扩展点配置， 后面我们的一些扩展会在这里配置 -->
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="httpRunner" factoryClass="com.dadada.plugin.httprunner.HttpRunnerToolWindowFactory"  anchor="bottom"/>
+        <toolWindow id="FlyDB提交" factoryClass="com.flydb.FlyDBSubmit" anchor="left"/>
+        <toolWindow id="FlyDB历史" factoryClass="com.flydb.FlyDBSubmitHistory" anchor="bottom"/>
     </extensions>
 
     <!-- 插件的兼容版本，这里使用的是build number -->
-    <idea-version since-build="203" until-build="232.*"/>
+    <idea-version since-build="222.3345.118" until-build="232.*"/>
 </idea-plugin>
