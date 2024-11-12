@@ -1,6 +1,4 @@
 <idea-plugin>
-
-
     <id>com.flydb.flydb-plug</id>
 
     <name>FlyDB</name>
@@ -9,7 +7,7 @@
 
     <!-- 插件的描述，在插件发布后会在插件首页显示 -->
     <description>
-        FlyDB 是一个数据库版本管理工具, 支持数据库文件版本管理，相当于Flyway liquibase 更方便快捷
+        FlyDB 是一个数据库版本管理工具, 支持数据库文件版本管理，相 当于Flyway liquibase 更方便快捷
     </description>
 
     <!-- 插件的依赖配置， 任何插件都应该配置platform， 才可以使用一些基本的功能 -->
@@ -20,6 +18,15 @@
         <toolWindow id="FlyDB提交" factoryClass="com.flydb.FlyDBSubmit" anchor="left"/>
         <toolWindow id="FlyDB历史" factoryClass="com.flydb.FlyDBSubmitHistory" anchor="bottom"/>
     </extensions>
+
+    <actions>
+        <action id="FlyDB.Action"
+                class="com.flydb.FlyDBBeanSync"
+                text="字段同步"
+                description="字段同步">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+    </actions>
 
     <!-- 插件的兼容版本，这里使用的是build number -->
     <idea-version since-build="222.3345.118" until-build="232.*"/>

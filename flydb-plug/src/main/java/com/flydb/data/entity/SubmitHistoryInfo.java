@@ -1,6 +1,10 @@
 package com.flydb.data.entity;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class SubmitHistoryInfo {
@@ -27,4 +31,25 @@ public class SubmitHistoryInfo {
     private String sql;
 
     private String updateDate;
+
+
+    public SubmitHistoryInfo(String operate) {
+        if (operate.equals("dml")) {
+            this.type = RandomUtil.randomEle(List.of("insert", "update", "delete"));
+        } else {
+            this.type = RandomUtil.randomEle(List.of("create", "alter", "drop"));
+        }
+        this.dbName = "flydb";
+        this.tableName = RandomUtil.randomString(10);
+//        this.tableComment = tableComment;
+        this.fieldName = RandomUtil.randomString(10);
+//        this.fieldType = fieldType;
+//        this.fieldComment = fieldComment;
+//        this.primaryVal = primaryVal;
+        this.sql = RandomUtil.randomString(500);
+        this.updateDate = DateUtil.format(DateUtil.date(), "yyyy/MM/dd HH:mm");
+        ;
+//        this.historyId = historyId;
+        this.operate = operate;
+    }
 }

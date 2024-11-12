@@ -19,7 +19,7 @@ public class SubmitHistory {
     public SubmitHistory(String title) {
         this.title = title;
         this.name = "flyDB";
-        this.time = DateUtil.now();
+        this.time = DateUtil.format(DateUtil.date(), "yyyy/MM/dd HH:mm");
         this.status = 0;
     }
 
