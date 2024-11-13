@@ -3,3 +3,6 @@
 /flydb-plug/build
 /flydb-spring-boot-starter/target
 /.idea
+/flydb-plug/.idea
+/flydb-plug/out
+/flydb-spring-boot-starter/.idea
