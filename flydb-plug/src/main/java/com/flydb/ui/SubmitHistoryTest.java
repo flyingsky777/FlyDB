@@ -135,10 +135,39 @@ public class SubmitHistoryTest extends JFrame {
     }
 
     private void initUI() {
-        JTable historyTable = initLeftHistoryTable();
 
-        JScrollPane leftPanel = new JScrollPane(historyTable);
+        // 搜索框
+        JTextField searchText = new JTextField();
+        searchText.setPreferredSize(new Dimension(150, 20));
+
+        // 功能按钮
+        JPanel leftTopRightBtnPanel = new JPanel();
+        JButton searchButton = new JButton("刷新");
+        JButton configButton = new JButton("配置");
+        leftTopRightBtnPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        leftTopRightBtnPanel.add(searchButton);
+        leftTopRightBtnPanel.add(configButton);
+
+        // 左侧顶部搜索功能栏
+        JPanel leftTopPanel = new JPanel();
+        leftTopPanel.setLayout(new BorderLayout());
+        leftTopPanel.add(searchText, BorderLayout.WEST);
+        leftTopPanel.add(leftTopRightBtnPanel, BorderLayout.EAST);
+
+        // 左侧区域
+        JTable historyTable = initLeftHistoryTable();
+        JScrollPane leftTablePanel = new JScrollPane(historyTable);
+        leftTablePanel.setBorder(null);
+
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BorderLayout());
+        leftPanel.add(leftTopPanel, BorderLayout.NORTH);
+        leftPanel.add(leftTablePanel, BorderLayout.CENTER);
+
+
+        // 右侧
         JTabbedPane rightPanel = new JTabbedPane();
+        rightPanel.setBorder(null);
 
         JTable ddlTable = initRightInfoTable("ddl");
         JScrollPane ddlPanel = new JScrollPane(ddlTable);
@@ -149,10 +178,11 @@ public class SubmitHistoryTest extends JFrame {
         rightPanel.add("DDL  2个提交", ddlPanel);
         rightPanel.add("DML  4个提交", dmlPanel);
 
+        // 主要
         JSplitPane panel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         panel.setLeftComponent(leftPanel);
         panel.setRightComponent(rightPanel);
-        panel.setResizeWeight(0.4); // 有内容后无效
+        panel.setResizeWeight(0.3); // 有内容后无效
         panel.setDividerSize(1);
 
         getContentPane().add(panel);

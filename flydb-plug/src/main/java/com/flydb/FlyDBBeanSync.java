@@ -19,11 +19,7 @@ public class FlyDBBeanSync extends AnAction {
         Project project = event.getData(PlatformDataKeys.PROJECT);
         Editor editor = event.getData(PlatformDataKeys.EDITOR);
 
-        System.out.println(project.getBasePath());
-        System.out.println(project.getProjectFile());
-        System.out.println(project.getName());
 
-        System.out.println(editor.getDocument());
 
     }
 }
