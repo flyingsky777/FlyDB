@@ -1,4 +1,4 @@
-package com.flydb.ui.dto;
+package com.flydb.ui.base;
 
 @FunctionalInterface
 public interface BeanTableModelInterface<T> {

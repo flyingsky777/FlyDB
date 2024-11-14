@@ -1,12 +1,13 @@
-package com.flydb.ui.dto;
+package com.flydb.ui.base;
 
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
-public class BeanTableModel<T> extends AbstractTableModel {
-    private final List<T> list;
-    private final Integer columnCount;
-    public final BeanTableModelInterface<T> invoke;
+public class BeanTableModel<T> extends DefaultTableModel {
+    private List<T> list;
+    private Integer columnCount;
+    public BeanTableModelInterface<T> invoke;
 
     public BeanTableModel(List<T> list, Integer columnCount, BeanTableModelInterface<T> invoke) {
         this.list = list;
@@ -16,7 +17,7 @@ public class BeanTableModel<T> extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return list.size();
+        return list == null ? 0 : list.size();
     }
 
     @Override

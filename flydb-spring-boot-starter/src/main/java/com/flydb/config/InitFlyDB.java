@@ -7,5 +7,5 @@ package com.flydb.config;
  * 3. 获取数据库对象
  */
 public class InitFlyDB {
-
+    
 }

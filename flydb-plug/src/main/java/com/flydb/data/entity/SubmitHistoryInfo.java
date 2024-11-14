@@ -19,18 +19,14 @@ public class SubmitHistoryInfo {
 
     private String dbName;
     private String tableName;
-    private String tableComment;
-
     private String fieldName;
-    private String fieldType;
-    private String fieldComment;
 
     // 主键值
     private String primaryVal;
 
     private String sql;
 
-    private String updateDate;
+    private String time;
 
 
     public SubmitHistoryInfo(String operate) {
@@ -47,7 +43,7 @@ public class SubmitHistoryInfo {
 //        this.fieldComment = fieldComment;
 //        this.primaryVal = primaryVal;
         this.sql = RandomUtil.randomString(500);
-        this.updateDate = DateUtil.format(DateUtil.date(), "yyyy/MM/dd HH:mm");
+        this.time = DateUtil.format(DateUtil.date(), "yyyy/MM/dd HH:mm");
         ;
 //        this.historyId = historyId;
         this.operate = operate;

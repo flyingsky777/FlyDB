@@ -1,141 +1,72 @@
 package com.flydb.ui;
 
-import cn.hutool.core.util.RandomUtil;
 import com.flydb.data.entity.SubmitHistory;
 import com.flydb.data.entity.SubmitHistoryInfo;
-import com.flydb.ui.dto.BeanTableModel;
+import com.flydb.data.service.HistoryService;
+import com.flydb.ui.base.ColumnOption;
+import com.flydb.ui.base.ConfigUtil;
+import com.flydb.ui.base.MyJTable;
+import com.flydb.ui.base.SwingComponents;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class SubmitHistoryTest extends JFrame {
+    // flydb 列表
+    private List<String> flyDBPaths;
+    // 当前显示的提交记录
+    private List<SubmitHistory> historyList;
+
+    private JProgressBar progressBar;
+
+    private JPanel dynamicPanel;
+    private JPanel errorPanel;
+    private JScrollPane tableSPanel;
+    private JTable historyTable;
+    private MyJTable<SubmitHistory> myJTable;
 
     public SubmitHistoryTest() {
         initUI();
+        firstData();
     }
 
     public static void main(String[] args) {
         new SubmitHistoryTest();
     }
 
-    public List<SubmitHistory> getHistoryList() {
-        List<SubmitHistory> historyList = new ArrayList<>();
-        for (int i = 0; i < RandomUtil.randomInt(100); i++) {
-            historyList.add(new SubmitHistory(RandomUtil.randomString(50)));
-        }
-        return historyList;
-    }
+    public void firstData() {
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() throws Exception {
 
-    public List<SubmitHistoryInfo> getHistoryInfoList(String historyId, String operate) {
-        List<SubmitHistoryInfo> historyList = new ArrayList<>();
-        for (int i = 0; i < RandomUtil.randomInt(100); i++) {
-            historyList.add(new SubmitHistoryInfo(operate));
-        }
-        return historyList;
-    }
+                flyDBPaths = ConfigUtil.getFlyDBPath("E:\\zhl\\FlyDB\\flydb-plug");
+                HistoryService historyService = new HistoryService(flyDBPaths.get(0));
+                historyList = historyService.getHistoryList(null);
 
+                return null;
+            }
 
-    private JTable initLeftHistoryTable() {
-        BeanTableModel<SubmitHistory> historyBeanList = new BeanTableModel<>(getHistoryList(), 3,
-                (invoke, rowIndex, columnIndex) -> switch (columnIndex) {
-                    case 0 -> invoke.getTitle();
-                    case 1 -> invoke.getName();
-                    case 2 -> invoke.getTime();
-                    default -> "";
-                });
+            @Override
+            protected void done() {
+                try {
+                    ((CardLayout) dynamicPanel.getLayout()).show(dynamicPanel, "table");
 
-        JTable historyTable = new JTable(historyBeanList);
-        // 隐藏表头
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setPreferredSize(new Dimension(0, 0));
-        historyTable.getTableHeader().setVisible(false);
-        historyTable.getTableHeader().setDefaultRenderer(renderer);
+                    myJTable.reloadData(historyList);
+                } catch (Exception e) {
+                    e.printStackTrace();
+//                    ((CardLayout) dynamicPanel.getLayout()).show(errorPanel, "error");
+                }
+                progressBar.setValue(100); // 请求完成，进度条设置为完成状态
+            }
+        };
 
-        // 去掉网格线
-        historyTable.setShowGrid(false);
-        historyTable.setShowHorizontalLines(false);
-        historyTable.setShowVerticalLines(false);
-
-        // 提交人 单元格居中、字体加粗(无效)
-        DefaultTableCellRenderer cr = new DefaultTableCellRenderer();
-        cr.setHorizontalAlignment(SwingConstants.CENTER);
-//        cr.setFont(new Font("SansSerif", Font.ITALIC, 20));
-
-        // 提交人 宽度
-        TableColumn column1 = historyTable.getColumnModel().getColumn(1);
-        column1.setPreferredWidth(65);
-        column1.setMaxWidth(80);
-        column1.setMinWidth(50);
-
-        // 时间 宽度
-        TableColumn column2 = historyTable.getColumnModel().getColumn(2);
-        column2.setPreferredWidth(120);
-        column2.setMaxWidth(120);
-        column2.setMinWidth(120);
-        column2.setCellRenderer(cr);
-
-        return historyTable;
-    }
-
-    private JTable initRightInfoTable(String operate) {
-        List<SubmitHistoryInfo> historyInfoList = getHistoryInfoList("", operate);
-        BeanTableModel<SubmitHistoryInfo> historyBeanList = new BeanTableModel<>(historyInfoList, 4,
-                (invoke, rowIndex, columnIndex) -> switch (columnIndex) {
-                    case 0 -> invoke.getType();
-                    case 1 -> invoke.getTableName();
-                    case 2 -> invoke.getFieldName();
-                    case 3 -> invoke.getSql();
-                    default -> "";
-                });
-
-        JTable infoTable = new JTable(historyBeanList);
-        // 隐藏表头
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setPreferredSize(new Dimension(0, 0));
-        infoTable.getTableHeader().setVisible(false);
-        infoTable.getTableHeader().setDefaultRenderer(renderer);
-
-        // 去掉网格线
-        infoTable.setShowGrid(false);
-        infoTable.setShowHorizontalLines(false);
-        infoTable.setShowVerticalLines(false);
-
-        //  单元格居中、字体加粗(无效)
-        DefaultTableCellRenderer cr = new DefaultTableCellRenderer();
-        cr.setHorizontalAlignment(SwingConstants.CENTER);
-//        cr.setFont(new Font("SansSerif", Font.ITALIC, 20));
-
-
-        // 操作类型
-        TableColumn column0 = infoTable.getColumnModel().getColumn(0);
-        column0.setPreferredWidth(40);
-        column0.setMaxWidth(40);
-        column0.setMinWidth(40);
-        column0.setCellRenderer(cr);
-
-        // 表名
-        TableColumn column1 = infoTable.getColumnModel().getColumn(1);
-        column1.setPreferredWidth(60);
-        column1.setMaxWidth(60);
-        column1.setMinWidth(60);
-        column1.setCellRenderer(cr);
-
-        // 字段名
-        TableColumn column2 = infoTable.getColumnModel().getColumn(2);
-        column2.setPreferredWidth(60);
-        column2.setMaxWidth(60);
-        column2.setMinWidth(60);
-        column2.setCellRenderer(cr);
-
-        return infoTable;
+        worker.execute();
     }
 
     private void initUI() {
-
         // 搜索框
         JTextField searchText = new JTextField();
         searchText.setPreferredSize(new Dimension(150, 20));
@@ -154,40 +85,75 @@ public class SubmitHistoryTest extends JFrame {
         leftTopPanel.add(searchText, BorderLayout.WEST);
         leftTopPanel.add(leftTopRightBtnPanel, BorderLayout.EAST);
 
-        // 左侧区域
-        JTable historyTable = initLeftHistoryTable();
-        JScrollPane leftTablePanel = new JScrollPane(historyTable);
-        leftTablePanel.setBorder(null);
 
+        // loading
+        progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true); // 设置进度条为不确定模式
+
+        // 占位
+        JPanel place1derPanel = SwingComponents.placeholderJpanel("加载中...");
+        errorPanel = SwingComponents.placeholderJpanel("数据加载失败！");
+
+        // 表格
+        Vector<ColumnOption> options = new Vector<>();
+        options.add(new ColumnOption("标题", "title", null, "left"));
+        options.add(new ColumnOption("提交人", "name", 80, "center"));
+        options.add(new ColumnOption("提交时间", "time", 120, "center"));
+
+        myJTable = new MyJTable<>();
+        historyTable = myJTable.create(historyList, options);
+
+
+        tableSPanel = new JScrollPane(historyTable);
+
+        // 动态切换提示的面板
+        dynamicPanel = new JPanel();
+        dynamicPanel.setLayout(new CardLayout());
+        dynamicPanel.add(place1derPanel);
+        dynamicPanel.add(tableSPanel, "table");
+        dynamicPanel.add(errorPanel, "error");
+
+        // loading + 动态切换面板
+        JPanel leftTablePanel = new JPanel(new BorderLayout());
+        leftTablePanel.add(progressBar, BorderLayout.NORTH);
+        leftTablePanel.add(dynamicPanel, BorderLayout.CENTER);
+
+        // 左侧 顶部搜索 + 列表的
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BorderLayout());
         leftPanel.add(leftTopPanel, BorderLayout.NORTH);
         leftPanel.add(leftTablePanel, BorderLayout.CENTER);
 
-
         // 右侧
-        JTabbedPane rightPanel = new JTabbedPane();
-        rightPanel.setBorder(null);
+//        ArrayList<ColumnOption> infoOptions = new ArrayList<>();
+//        infoOptions.add(new ColumnOption("类型", "type", 80, "center"));
+//        infoOptions.add(new ColumnOption("表", "tableName", 80, "center"));
+//        infoOptions.add(new ColumnOption("字段", "fieldName", 80, "center"));
+//        infoOptions.add(new ColumnOption("sql", "sql", null, "left"));
+//
+//        JTabbedPane rightPanel = new JTabbedPane();
+//        rightPanel.setBorder(null);
+//
+//        JTable ddlTable = new MyJTable<SubmitHistoryInfo>().create(historyList, options);
+//        JScrollPane ddlPanel = new JScrollPane(ddlTable);
+//
+//        JTable dmlTable = new MyJTable<SubmitHistoryInfo>().create(historyList, options);
+//        JScrollPane dmlPanel = new JScrollPane(dmlTable);
+//
+//        rightPanel.add("DDL  2个提交", ddlPanel);
+//        rightPanel.add("DML  4个提交", dmlPanel);
 
-        JTable ddlTable = initRightInfoTable("ddl");
-        JScrollPane ddlPanel = new JScrollPane(ddlTable);
-
-        JTable dmlTable = initRightInfoTable("dml");
-        JScrollPane dmlPanel = new JScrollPane(dmlTable);
-
-        rightPanel.add("DDL  2个提交", ddlPanel);
-        rightPanel.add("DML  4个提交", dmlPanel);
 
         // 主要
         JSplitPane panel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         panel.setLeftComponent(leftPanel);
-        panel.setRightComponent(rightPanel);
+        panel.setRightComponent(SwingComponents.placeholderJpanel("选择要查看的记录"));
         panel.setResizeWeight(0.3); // 有内容后无效
         panel.setDividerSize(1);
 
         getContentPane().add(panel);
         pack();
-        setBounds(0, 0, 1800, 300);
+        setBounds(0, 0, 1600, 300);
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }

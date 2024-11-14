@@ -24,9 +24,9 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.22'
     implementation 'cn.hutool:hutool-all:5.8.26'
     implementation 'org.xerial:sqlite-jdbc:3.8.11.2'
-
-
+    implementation 'org.yaml:snakeyaml:2.0'
 }
+
 
 intellij {
     version = '2023.2.6'

@@ -15,14 +15,15 @@
 
     <!--插件扩展点配置， 后面我们的一些扩展会在这里配置 -->
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="FlyDB提交" factoryClass="com.flydb.FlyDBSubmit" anchor="left"/>
-        <toolWindow id="FlyDB历史" factoryClass="com.flydb.FlyDBSubmitHistory" anchor="bottom"/>
+        <toolWindow id="FlyDB提交" factoryClass="com.flydb.FlyDBSubmit" icon="/logo.svg" anchor="left"/>
+        <toolWindow id="FlyDB历史" factoryClass="com.flydb.FlyDBSubmitHistory" icon="/logo.svg" anchor="bottom"/>
     </extensions>
 
     <actions>
         <action id="FlyDB.Action"
                 class="com.flydb.FlyDBBeanSync"
                 text="字段同步"
+                icon="/logo.svg"
                 description="字段同步">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </action>
