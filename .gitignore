@@ -1,8 +1,10 @@
+/.idea
 /flydb-plug/.gradle
 /flydb-plug/.run
 /flydb-plug/build
-/flydb-spring-boot-starter/target
-/.idea
 /flydb-plug/.idea
 /flydb-plug/out
+/flydb-spring-boot-starter/target
 /flydb-spring-boot-starter/.idea
+/flydb-test/.idea
+/flydb-test/target

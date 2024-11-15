@@ -1,0 +1,32 @@
+server:
+  port: 1080
+
+spring:
+  profiles:
+    active: dev
+  datasource:
+    hikari:
+      connection-test-query: SELECT 1
+      idle-timeout: 30000
+      pool-name: DatebookHikariCP
+      max-lifetime: 30000
+      connection-timeout: 30000
+      auto-commit: true
+      minimum-idle: 5
+      maximum-pool-size: 15
+
+mybatis-plus:
+  mapper-locations: classpath:/com/zl/zlerp/project/**/mapper/*Mapper.xml
+  typeAliasesPackage: com.zl.zlerp.project.*.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl     # 关闭控制台打印日志
+  global-config:
+    db-config:
+      logic-delete-field: deleted # 全局逻辑删除字段名
+      logic-delete-value: 1 # 逻辑已删除值
+      logic-not-delete-value: 0 # 逻辑未删除值
+
+flydb:
+  enable: true
+  enable-web: false
+  db-path: classpath:flydb/fly.db
