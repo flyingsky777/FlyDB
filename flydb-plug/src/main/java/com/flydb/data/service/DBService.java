@@ -1,6 +1,7 @@
 package com.flydb.data.service;
 
-import com.flydb.data.entity.DDLBean;
+
+import com.flydb.data.entity.HistoryInfo;
 
 import java.util.List;
 
@@ -9,10 +10,10 @@ public interface DBService {
     /**
      * 获取 DDL列表
      */
-    List<DDLBean> getDDLList(String time);
+    List<HistoryInfo> getDDLList(String time);
 
     /**
      * 获取 DML列表
      */
-    List<DDLBean> getDMLList(String time);
+    List<HistoryInfo> getDMLList(String time);
 }

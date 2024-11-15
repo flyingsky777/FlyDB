@@ -3,7 +3,7 @@ package com.flydb.ui;
 import com.flydb.data.entity.History;
 import com.flydb.data.service.HistoryService;
 import com.flydb.ui.base.ColumnOption;
-import com.flydb.ui.base.ConfigUtil;
+import com.flydb.util.ConfigUtil;
 import com.flydb.ui.base.MyJTable;
 import com.flydb.ui.base.SwingComponents;
 

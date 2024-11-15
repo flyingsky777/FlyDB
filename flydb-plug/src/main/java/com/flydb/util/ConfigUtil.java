@@ -1,9 +1,10 @@
-package com.flydb.ui.base;
+package com.flydb.util;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Dict;
 import cn.hutool.setting.dialect.Props;
 import cn.hutool.setting.yaml.YamlUtil;
+import com.flydb.data.entity.DBConfig;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -16,6 +17,32 @@ public class ConfigUtil {
     public static void main(String[] args) {
         List<String> flyDBPath = getFlyDBPath("E:\\zhl\\flydb-test");
         System.out.println(flyDBPath);
+    }
+
+    /**
+     * 查找项目中 application 中配置的所有 数据库配置信息
+     */
+    public static List<DBConfig> getMysqlList(String basePath) {
+        List<File> files = FileUtil.loopFiles(basePath, file -> file.getName().endsWith(".yml") | file.getName().endsWith(".properties"));
+
+        // yml 和 properties 文件里配置的 flydb.dbPath
+        List<String> list = new ArrayList<>();
+        for (File file : files) {
+            String str = "";
+            if (file.getName().endsWith(".yml")) {
+                Dict load = YamlUtil.load(FileUtil.getReader(file, Charset.defaultCharset()));
+                str = load.getByPath("spring.datasource");
+            } else if (file.getName().endsWith(".properties")) {
+                Props prop1 = new Props(file);
+                str = prop1.getStr("flydb.db-path");
+            }
+
+            if (str == null | "".equals(str)) continue;
+
+            list.add(str);
+
+        }
+        return null;
     }
 
     /**
@@ -41,6 +68,7 @@ public class ConfigUtil {
             }
 
             if (str == null | "".equals(str)) continue;
+
             if (str.contains("/")) {
                 String[] split = str.split("/");
                 list.add(split[split.length - 1]);
