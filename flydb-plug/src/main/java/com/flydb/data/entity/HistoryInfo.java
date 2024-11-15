@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SubmitHistoryInfo {
+public class HistoryInfo {
     private String historyId;
 
     // ddl dml
@@ -29,7 +29,7 @@ public class SubmitHistoryInfo {
     private String time;
 
 
-    public SubmitHistoryInfo(String operate) {
+    public HistoryInfo(String operate) {
         if (operate.equals("dml")) {
             this.type = RandomUtil.randomEle(List.of("insert", "update", "delete"));
         } else {

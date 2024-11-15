@@ -6,8 +6,8 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
 import cn.hutool.db.ds.simple.SimpleDataSource;
-import com.flydb.data.entity.SubmitHistory;
-import com.flydb.data.entity.SubmitHistoryInfo;
+import com.flydb.data.entity.History;
+import com.flydb.data.entity.HistoryInfo;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -22,32 +22,32 @@ public class HistoryService {
         this.ds = new SimpleDataSource("jdbc:sqlite:" + dbPath, "", "");
     }
 
-    public List<SubmitHistory> getHistoryList(String key) {
+    public List<History> getHistoryList(String key) {
         try {
-            String sql = " select * from submit_history where 1=1 ";
+            String sql = " select * from history where 1=1 ";
             if (StrUtil.isNotBlank(key)) {
                 sql += " and title like %" + key + "% ";
             }
             sql += " order by time desc ";
-            return Db.use(ds).query(sql, SubmitHistory.class);
+            return Db.use(ds).query(sql, History.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<SubmitHistoryInfo> getHistory(String id) {
+    public List<HistoryInfo> getHistory(String id) {
         try {
-            String sql = "select * from submit_history_info where historyId=" + id;
-            return Db.use(ds).query(sql, SubmitHistoryInfo.class);
+            String sql = "select * from history_info where historyId=" + id;
+            return Db.use(ds).query(sql, HistoryInfo.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void addHistory(SubmitHistory history, List<SubmitHistoryInfo> items) {
+    public void addHistory(History history, List<HistoryInfo> items) {
         try {
             String historyId = IdUtil.getSnowflakeNextIdStr();
-            Entity insertHistory = Entity.create("submit_history")
+            Entity insertHistory = Entity.create("history")
                     .set("id", historyId)
                     .set("title", history.getTitle())
                     .set("name", history.getName())
@@ -55,8 +55,8 @@ public class HistoryService {
                     .set("status", "historyId");
 
             ArrayList<Entity> insertInfoList = new ArrayList<>();
-            for (SubmitHistoryInfo info : items) {
-                Entity insertInfo = Entity.create("submit_history_info")
+            for (HistoryInfo info : items) {
+                Entity insertInfo = Entity.create("history_info")
                         .set("historyId", historyId)
                         .set("operate", info.getOperate())
                         .set("type", info.getType())

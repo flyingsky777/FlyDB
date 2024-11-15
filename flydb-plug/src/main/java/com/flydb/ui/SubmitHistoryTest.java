@@ -1,7 +1,6 @@
 package com.flydb.ui;
 
-import com.flydb.data.entity.SubmitHistory;
-import com.flydb.data.entity.SubmitHistoryInfo;
+import com.flydb.data.entity.History;
 import com.flydb.data.service.HistoryService;
 import com.flydb.ui.base.ColumnOption;
 import com.flydb.ui.base.ConfigUtil;
@@ -10,7 +9,6 @@ import com.flydb.ui.base.SwingComponents;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -18,7 +16,7 @@ public class SubmitHistoryTest extends JFrame {
     // flydb 列表
     private List<String> flyDBPaths;
     // 当前显示的提交记录
-    private List<SubmitHistory> historyList;
+    private List<History> historyList;
 
     private JProgressBar progressBar;
 
@@ -26,7 +24,7 @@ public class SubmitHistoryTest extends JFrame {
     private JPanel errorPanel;
     private JScrollPane tableSPanel;
     private JTable historyTable;
-    private MyJTable<SubmitHistory> myJTable;
+    private MyJTable<History> myJTable;
 
     public SubmitHistoryTest() {
         initUI();

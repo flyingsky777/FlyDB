@@ -16,7 +16,6 @@ public class FlyDBProperties {
      */
     private Boolean enable = true;
 
-
     /**
      * 数据库文件路径
      */
