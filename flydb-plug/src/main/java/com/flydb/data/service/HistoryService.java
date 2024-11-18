@@ -16,10 +16,10 @@ import java.util.List;
 
 public class HistoryService {
 
-    private final DataSource ds;
+    private final String dbPath;
 
     public HistoryService(String dbPath) {
-        this.ds = new SimpleDataSource("jdbc:sqlite:" + dbPath, "", "");
+        this.dbPath = dbPath;
     }
 
     public List<History> getHistoryList(String key) {
@@ -29,6 +29,7 @@ public class HistoryService {
                 sql += " and title like %" + key + "% ";
             }
             sql += " order by time desc ";
+            DataSource ds = new SimpleDataSource("jdbc:sqlite:" + dbPath, "", "");
             return Db.use(ds).query(sql, History.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -38,6 +39,7 @@ public class HistoryService {
     public List<HistoryInfo> getHistory(String id) {
         try {
             String sql = "select * from history_info where historyId=" + id;
+            DataSource ds = new SimpleDataSource("jdbc:sqlite:" + dbPath, "", "");
             return Db.use(ds).query(sql, HistoryInfo.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -63,12 +65,12 @@ public class HistoryService {
                         .set("dbName", info.getDbName())
                         .set("tableName", info.getTableName())
                         .set("fieldName", info.getFieldName())
-                        .set("primaryVal", info.getPrimaryVal())
                         .set("sql", info.getSql())
                         .set("time", DateUtil.format(DateUtil.date(), "yyyy/MM/dd HH:mm"));
                 insertInfoList.add(insertInfo);
             }
 
+            DataSource ds = new SimpleDataSource("jdbc:sqlite:" + dbPath, "", "");
             Db.use(ds).tx(db -> {
                 db.insert(insertHistory);
                 db.insert(insertInfoList);

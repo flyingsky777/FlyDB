@@ -8,12 +8,13 @@ import java.util.List;
 public interface DBService {
 
     /**
-     * 获取 DDL列表
+     * 获取 DDL列表 和 DML 列表
      */
-    List<HistoryInfo> getDDLList(String time);
+    List<HistoryInfo> getList();
 
     /**
-     * 获取 DML列表
+     * 保存当前日志
      */
-    List<HistoryInfo> getDMLList(String time);
+    void saveNow();
+
 }

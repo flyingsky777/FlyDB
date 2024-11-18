@@ -2,7 +2,10 @@ package com.flydb.util;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Dict;
+import cn.hutool.json.JSONNull;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.setting.dialect.Props;
+import cn.hutool.setting.dialect.PropsUtil;
 import cn.hutool.setting.yaml.YamlUtil;
 import com.flydb.data.entity.DBConfig;
 
@@ -15,8 +18,7 @@ import java.util.stream.Collectors;
 public class ConfigUtil {
 
     public static void main(String[] args) {
-        List<String> flyDBPath = getFlyDBPath("E:\\zhl\\flydb-test");
-        System.out.println(flyDBPath);
+        getMysqlList("E:\\zhl\\FlyDB\\flydb-test");
     }
 
     /**
@@ -28,18 +30,32 @@ public class ConfigUtil {
         // yml 和 properties 文件里配置的 flydb.dbPath
         List<String> list = new ArrayList<>();
         for (File file : files) {
-            String str = "";
+
             if (file.getName().endsWith(".yml")) {
                 Dict load = YamlUtil.load(FileUtil.getReader(file, Charset.defaultCharset()));
-                str = load.getByPath("spring.datasource");
+
+                if (load.containsKey("spring.datasource")) {   // 单数据源
+                    String url = load.getByPath("spring.datasource.url");
+                    String username = load.getByPath("spring.datasource.username");
+                    String password = load.getByPath("spring.datasource.password");
+                    String driver = load.getByPath("spring.datasource.driver-class-name");
+                    System.out.println(url);
+                    System.out.println(username);
+                    System.out.println(password);
+                    System.out.println(driver);
+                } else if (load.containsKey("spring.datasource.dynamic.datasource")) { // mybatis plus 多数据源
+                    Object obj = load.getObj("spring.datasource.dynamic.datasource");
+                    System.out.println(JSONUtil.toJsonStr(obj));
+                    if (obj instanceof List) {
+                        System.out.println("list");
+                    }
+                }
+
             } else if (file.getName().endsWith(".properties")) {
                 Props prop1 = new Props(file);
-                str = prop1.getStr("flydb.db-path");
+//                str = prop1.getStr("flydb.db-path");
             }
 
-            if (str == null | "".equals(str)) continue;
-
-            list.add(str);
 
         }
         return null;

@@ -7,12 +7,13 @@ group = "com.flydb"
 version = "1.0"
 
 repositories {
+    maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
     maven { url 'https://maven.aliyun.com/repository/central/' }
     maven { url 'https://maven.aliyun.com/repository/public/' }
     maven { url 'https://maven.aliyun.com/repository/google/' }
     maven { url 'https://maven.aliyun.com/repository/jcenter/' }
     maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-    //    mavenCentral()
+//    mavenCentral()
 }
 
 dependencies {
@@ -23,6 +24,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
     implementation 'org.projectlombok:lombok:1.18.22'
     implementation 'cn.hutool:hutool-all:5.8.26'
+    implementation 'com.github.jsqlparser:jsqlparser:5.0'
     implementation 'org.xerial:sqlite-jdbc:3.8.11.2'
     implementation 'org.yaml:snakeyaml:2.0'
 }
