@@ -26,7 +26,9 @@ dependencies {
     implementation 'cn.hutool:hutool-all:5.8.26'
     implementation 'com.github.jsqlparser:jsqlparser:5.0'
     implementation 'org.xerial:sqlite-jdbc:3.8.11.2'
+    implementation 'mysql:mysql-connector-java:8.0.29'
     implementation 'org.yaml:snakeyaml:2.0'
+    implementation 'org.apache.batik:batik-svggenloader:1.14'
 }
 
 
@@ -45,3 +47,8 @@ patchPluginXml {
     untilBuild = '242.*'
 }
 
+//// 或者使用processResources内置任务
+//processResources {
+//    from 'src/main/resources' // 源文件夹路径
+//    into 'build/resources' // 目标文件夹路径
+//}

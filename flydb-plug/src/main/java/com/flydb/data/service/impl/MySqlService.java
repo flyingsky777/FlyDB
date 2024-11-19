@@ -1,5 +1,7 @@
 package com.flydb.data.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
 import cn.hutool.db.ds.simple.SimpleDataSource;
@@ -12,14 +14,16 @@ import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.alter.Alter;
+import net.sf.jsqlparser.statement.alter.AlterExpression;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
+import net.sf.jsqlparser.statement.delete.Delete;
 import net.sf.jsqlparser.statement.drop.Drop;
+import net.sf.jsqlparser.statement.insert.Insert;
+import net.sf.jsqlparser.statement.update.Update;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * MySql binlog ddl 和 dml 提取方案
@@ -38,6 +42,25 @@ public class MySqlService implements DBService {
 
     public MySqlService(DBConfig config) {
         this.config = config;
+    }
+
+    public static void main(String[] args) {
+        String url = "jdbc:mysql://127.0.0.1:3306/flydb";
+        String username = "root";
+        String password = "sw@3100@admin";
+        String driver = "com.mysql.cj.jdbc.Driver";
+        DBConfig dbConfig = new DBConfig();
+        dbConfig.setUrl(url);
+        dbConfig.setName(username);
+        dbConfig.setPass(password);
+        dbConfig.setDriver(driver);
+        MySqlService service = new MySqlService(dbConfig);
+        boolean b = service.checkBinLog();
+        if (b) {
+            List<HistoryInfo> list = service.getList();
+            list.forEach(System.out::println);
+        }
+//        service.saveNow();
     }
 
     @Override
@@ -72,10 +95,6 @@ public class MySqlService implements DBService {
         return List.of();
     }
 
-    public static void main(String[] args) {
-
-
-    }
 
     /**
      * 解析 Binlog 文件
@@ -97,28 +116,65 @@ public class MySqlService implements DBService {
                 String type = "";
                 String tableName = "";
                 String filedName = "";
+                String filedType = "";
 
                 Statement statement = CCJSqlParserUtil.parse(sql);
-
+                // DDL
                 if (statement instanceof CreateTable createTable) {
-                    type = "DDL";
+                    operate = "DDL";
+                    type = "CREATE";
                     tableName = createTable.getTable().getName();
                 } else if (statement instanceof Alter alter) {
-                    type = "DDL";
+                    operate = "DDL";
+                    type = "ALERT";
                     tableName = alter.getTable().getName();
+                    // 修改表三种类型： 添加字段、删除字段、修改字段
+                    LinkedHashMap<String, String> map = new LinkedHashMap<>();
+                    if (!alter.getAlterExpressions().isEmpty()) {
+                        for (AlterExpression alterExpression : alter.getAlterExpressions()) {
+                            if (alterExpression.getColumnName() != null) {
+                                map.put(alterExpression.getColumnName(), alterExpression.getOperation().name());
+                            } else if (!alterExpression.getColDataTypeList().isEmpty()) {
+                                map.put(alterExpression.getColDataTypeList().get(0).getColumnName(), alterExpression.getOperation().name());
+                            }
+                        }
+                    }
+                    if (!map.isEmpty()) {
+                        filedName = CollUtil.join(map.keySet(), ",");
+                        filedType = CollUtil.join(map.values(), ",");
+                    }
+
                 } else if (statement instanceof Drop drop) {
-                    type = "DDL";
+                    operate = "DDL";
+                    type = "DROP";
                     tableName = drop.getName().getName();
                 }
+                // DML
+                else if (statement instanceof Insert insert) {
+                    operate = "DML";
+                    type = "INSERT";
+                    tableName = insert.getTable().getName();
+                } else if (statement instanceof Delete delete) {
+                    operate = "DML";
+                    type = "DELETE";
+                    tableName = delete.getTable().getName();
+                } else if (statement instanceof Update update) {
+                    operate = "DML";
+                    type = "UPDATE";
+                    tableName = update.getTable().getName();
+                }
 
-                HistoryInfo hi = new HistoryInfo();
-                hi.setOperate(operate);
-                hi.setType(type);
-                hi.setDbName(dbName);
-                hi.setTableName(tableName);
-                hi.setFieldName(filedName);
-                hi.setSql(sql);
-                list.add(hi);
+                if (StrUtil.isNotBlank(tableName)) {
+                    HistoryInfo hi = new HistoryInfo();
+                    hi.setOperate(operate);
+                    hi.setType(type);
+                    hi.setDbName(dbName);
+                    hi.setTableName(tableName.replace("`", "").replace("`", "").trim());
+                    hi.setFieldName(filedName);
+                    hi.setFieldType(filedType);
+                    hi.setSql(sql);
+                    list.add(hi);
+                }
             }
         }
         return list;
@@ -158,6 +214,8 @@ public class MySqlService implements DBService {
      * @throws SQLException
      */
     public void saveNowBinLog(List<FlyLast> logs, DataSource ds) throws SQLException {
+        Db.use(ds).execute("TRUNCATE TABLE flydb_last;");
+
         ArrayList<Entity> entities = new ArrayList<>();
         Date date = new Date();
         List<Entity> query = Db.use(ds).query("show master status;");

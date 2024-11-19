@@ -19,6 +19,8 @@ public class HistoryInfo {
 
     private String fieldName;
 
+    private String fieldType;
+
     private String sql;
 
     private String time;
