@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
 import cn.hutool.db.ds.simple.SimpleDataSource;
+import cn.hutool.json.JSONUtil;
 import com.flydb.data.entity.Binlog;
 import com.flydb.data.entity.DBConfig;
 import com.flydb.data.entity.FlyLast;
@@ -32,10 +33,9 @@ import java.util.*;
  * 3. 如果上一次数据为空、则将 2步的日志数据存储、开始第一轮
  * 4. 如果不为空、则对比新增的文件、以及文件大小、判断哪个文件新增过
  * 5. 获取日志文件详情
- *          -  文件改动、获取上一次的pos 和 文件最大的pos 之间的数据 show binlog events in 'binlog.000120' from 126
- *          -  新增文件、全部数据
+ * -  文件改动、获取上一次的pos 和 文件最大的pos 之间的数据 show binlog events in 'binlog.000120' from 126
+ * -  新增文件、全部数据
  * 6. 提交、 将当前的binlog日志详情、以及最后一个文件的pos 保存到数据库 flydb_last
- *
  */
 public class MySqlService implements DBService {
     private final DBConfig config;
@@ -58,7 +58,9 @@ public class MySqlService implements DBService {
         boolean b = service.checkBinLog();
         if (b) {
             List<HistoryInfo> list = service.getList();
-            list.forEach(System.out::println);
+            System.out.println(list);
+            List<HistoryInfo> flydb = service.getTree(list, "flydb");
+            System.out.println(JSONUtil.toJsonStr(flydb));
         }
 //        service.saveNow();
     }
@@ -180,8 +182,52 @@ public class MySqlService implements DBService {
         return list;
     }
 
+    public List<HistoryInfo> getTree(List<HistoryInfo> list, String dbName) {
+        LinkedHashMap<String, List<HistoryInfo>> ddlMap = new LinkedHashMap<>();
+        LinkedHashMap<String, List<HistoryInfo>> dmlMap = new LinkedHashMap<>();
+
+        list.forEach(item -> {
+            if (item.getDbName().equals(dbName)) {
+                if (item.getOperate().equals("DML")) {
+                    dmlMap.computeIfAbsent(item.getTableName(), k -> new ArrayList<>()).add(item);
+                }
+                if (item.getOperate().equals("DDL")) {
+                    ddlMap.computeIfAbsent(item.getTableName(), k -> new ArrayList<>()).add(item);
+                }
+            }
+        });
+
+        HistoryInfo ddlH = new HistoryInfo();
+        ddlH.setOperate("DDL");
+        ArrayList<HistoryInfo> ddl = new ArrayList<>();
+        ddlMap.forEach((k, v) -> {
+            HistoryInfo info = new HistoryInfo();
+            info.setTableName(k);
+            info.setChild(v);
+            ddl.add(info);
+        });
+        ddlH.setChild(ddl);
+
+        HistoryInfo dmlH = new HistoryInfo();
+        dmlH.setOperate("DML");
+        ArrayList<HistoryInfo> dml = new ArrayList<>();
+        dmlMap.forEach((k, v) -> {
+            HistoryInfo info = new HistoryInfo();
+            info.setTableName(k);
+            info.setChild(v);
+            dml.add(info);
+        });
+        dmlH.setChild(dml);
+
+        ArrayList<HistoryInfo> result = new ArrayList<>();
+        result.add(ddlH);
+        result.add(dmlH);
+        return result;
+    }
+
     /**
      * MySQL的变量参数binlog_format的值应为ROW，参数binlog_row_image的值应为FULL
+     *
      * @return
      */
     public boolean checkBinLog() {
@@ -210,6 +256,7 @@ public class MySqlService implements DBService {
 
     /**
      * 保存当前的binlog到数据库
+     *
      * @param logs
      * @throws SQLException
      */

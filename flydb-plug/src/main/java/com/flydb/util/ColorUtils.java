@@ -3,6 +3,9 @@ package com.flydb.util;
 import java.awt.*;
 
 public class ColorUtils {
+
+    private static final String BORDER_COLOR = "#1E1F22";
+
     public static Color hexTocolor(String hex) {
         if (hex.startsWith("#")) {
             hex = hex.substring(1);

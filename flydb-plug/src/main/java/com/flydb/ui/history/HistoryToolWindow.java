@@ -1,6 +1,5 @@
-package com.flydb;
+package com.flydb.ui.history;
 
-import com.flydb.ui.SubmitHistoryUI;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -9,14 +8,14 @@ import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
 
 
-public class FlyDBSubmitHistory implements ToolWindowFactory {
+public class HistoryToolWindow implements ToolWindowFactory {
 
     private static final String DISPLAY_NAME = "";
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         //toolwindow 里面的内容，创建我们自己定义的面板
-        SubmitHistoryUI history = new SubmitHistoryUI(project, toolWindow);
+        HistoryUI history = new HistoryUI(project, toolWindow);
 
         //获取ContentFactory实例
         //这种方式是为了兼容老版本的IDEA，但是SERVICE是已经被标记为了@Deprecated

@@ -2,6 +2,8 @@ package com.flydb.data.entity;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class HistoryInfo {
     private String historyId;
@@ -24,5 +26,10 @@ public class HistoryInfo {
     private String sql;
 
     private String time;
+
+    private String title;
+
+    private List<HistoryInfo> child;
+
 
 }

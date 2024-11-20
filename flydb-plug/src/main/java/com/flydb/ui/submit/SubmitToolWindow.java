@@ -1,6 +1,5 @@
-package com.flydb;
+package com.flydb.ui.submit;
 
-import com.flydb.ui.SubmitUI;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -8,7 +7,7 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
 
-public class FlyDBSubmit implements ToolWindowFactory {
+public class SubmitToolWindow implements ToolWindowFactory {
 
     private static final String DISPLAY_NAME = "";
 
@@ -23,11 +22,11 @@ public class FlyDBSubmit implements ToolWindowFactory {
 
         //这种方式只能在 build number 222.3345.118 之后调用，也就是如果我们使用了这种方式，那么在plugin.xml中的since-version必须要配置为：<idea-version since-build="222.3345.118"/>
         ContentFactory contentFactory = ContentFactory.getInstance();
-
         //创建一个Content，也就是toolwindow里面的一个tab页
         Content content = contentFactory.createContent(httpRunnerToolWindow, DISPLAY_NAME, false);
         //将Content加入到toolwindow中
         toolWindow.getContentManager().addContent(content);
+
     }
 
 
