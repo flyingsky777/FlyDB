@@ -68,7 +68,6 @@ public class SubmitUI extends SimpleToolWindowPanel {
         splitter.setFirstComponent(new SqlTreeUI());
         splitter.setSecondComponent(new SubmitMsgUI());
         splitter.setProportion(0.8f);
-        // 分割线宽度和颜色
         splitter.setDividerWidth(1);
 //        splitter.getDivider().setBackground(ColorUtils.BORDER());
 
