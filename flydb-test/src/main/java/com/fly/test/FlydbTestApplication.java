@@ -11,5 +11,4 @@ public class FlydbTestApplication {
     public static void main(String[] args) {
         SpringApplication.run(FlydbTestApplication.class, args);
     }
-
 }

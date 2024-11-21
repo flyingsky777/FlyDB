@@ -4,7 +4,11 @@ import java.awt.*;
 
 public class ColorUtils {
 
-    private static final String BORDER_COLOR = "#1E1F22";
+    private static final String DARK_COLOR = "#1E1F22";
+
+    public static Color DARK() {
+        return hexTocolor(DARK_COLOR);
+    }
 
     public static Color hexTocolor(String hex) {
         if (hex.startsWith("#")) {

@@ -16,11 +16,11 @@
     <!--插件扩展点配置， 后面我们的一些扩展会在这里配置 -->
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="FlyDB提交" factoryClass="com.flydb.ui.submit.SubmitToolWindow" icon="/icons/logo.svg" anchor="left"/>
-        <toolWindow id="FlyDB历史" factoryClass="com.flydb.ui.history.HistoryToolWindow" icon="/icons/logo.svg" anchor="bottom"/>
+<!--        <toolWindow id="FlyDB历史" factoryClass="com.flydb.ui.history.HistoryToolWindow" icon="/icons/logo.svg" anchor="bottom"/>-->
     </extensions>
 
     <actions>
-        <action id="FlyDB.Action" class="com.flydb.ui.sync.BeanSyncAction" text="字段同步" icon="/icons/logo.svg"/>
+<!--        <action id="FlyDB.Action" class="com.flydb.ui.sync.BeanSyncAction" text="字段同步" icon="/icons/logo.svg"/>-->
     </actions>
 
     <!-- 插件的兼容版本，这里使用的是build number -->

@@ -1,16 +1,17 @@
 package com.flydb.ui.submit;
 
-import cn.hutool.json.JSONUtil;
-import com.flydb.data.entity.DBConfig;
-import com.flydb.data.entity.HistoryInfo;
-import com.flydb.data.service.impl.MySqlService;
+import com.flydb.util.ColorUtils;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.ui.components.JBTreeTable;
-import com.intellij.ui.treeStructure.treetable.TreeTableModel;
+import com.intellij.ui.JBSplitter;
 
-import java.util.List;
+import javax.swing.border.Border;
+import javax.swing.plaf.PanelUI;
+import javax.swing.plaf.basic.BasicPanelUI;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
+import java.awt.*;
 
 public class SubmitUI extends SimpleToolWindowPanel {
     private final Project project;
@@ -45,28 +46,33 @@ public class SubmitUI extends SimpleToolWindowPanel {
      * FlyDB[classpath:/fly.db]
      */
     private void initUI() {
-//        JBSplitter splitter = new JBSplitter(false);
-//        splitter.setSecondComponent(contentP);
-//        splitter.setFirstComponent(bottomP);
+//        String url = "jdbc:mysql://127.0.0.1:3306/flydb";
+//        String username = "root";
+//        String password = "sw@3100@admin";
+//        String driver = "com.mysql.cj.jdbc.Driver";
+//        DBConfig dbConfig = new DBConfig();
+//        dbConfig.setUrl(url);
+//        dbConfig.setName(username);
+//        dbConfig.setPass(password);
+//        dbConfig.setDriver(driver);
+//        MySqlService service = new MySqlService(dbConfig);
+//        List<HistoryInfo> list = service.getList();
+//        List<HistoryInfo> flydb = service.getTree(list, "flydb");
+//
+//        AllIcons.ToolbarDecorator allIcons = new AllIcons.ToolbarDecorator();
+//
+//        TreeTableModel treeTableModel = new SubmitTreeTableModel(flydb);
+//        JBTreeTable jbTreeTable = new JBTreeTable(treeTableModel);
 
-        String url = "jdbc:mysql://127.0.0.1:3306/flydb";
-        String username = "root";
-        String password = "sw@3100@admin";
-        String driver = "com.mysql.cj.jdbc.Driver";
-        DBConfig dbConfig = new DBConfig();
-        dbConfig.setUrl(url);
-        dbConfig.setName(username);
-        dbConfig.setPass(password);
-        dbConfig.setDriver(driver);
-        MySqlService service = new MySqlService(dbConfig);
-        List<HistoryInfo> list = service.getList();
-        List<HistoryInfo> flydb = service.getTree(list, "flydb");
+        JBSplitter splitter = new JBSplitter(true);
+        splitter.setFirstComponent(new SqlTreeUI());
+        splitter.setSecondComponent(new SubmitMsgUI());
+        splitter.setProportion(0.8f);
+        // 分割线宽度和颜色
+        splitter.setDividerWidth(1);
+//        splitter.getDivider().setBackground(ColorUtils.BORDER());
 
-
-        TreeTableModel treeTableModel = new SubmitTreeTableModel(flydb);
-        JBTreeTable jbTreeTable = new JBTreeTable(treeTableModel);
-
-        setContent(jbTreeTable);
+        setContent(splitter);
     }
 
 }
