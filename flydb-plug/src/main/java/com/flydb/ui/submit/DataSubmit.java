@@ -30,17 +30,21 @@ public class DataSubmit {
         // 加载保存的数据
 
         dbConfig = mysqlList.get(0);
-        getTreeData();
+        root = updateTreeData();
     }
 
 
-    private void getTreeData() {
+    public CheckBoxTreeNode updateTreeData() {
         MySqlService service = new MySqlService(dbConfig);
         boolean b = service.checkBinLog();
         if (b) {
             List<HistoryInfo> list = service.getList();
-            root = TreeUtils.getTree(list, dbConfig.getDatabase());
+            if (!list.isEmpty()) {
+                return TreeUtils.getTree(list, dbConfig.getDatabase());
+            }
+        } else {
+            System.out.println("数据库不支持！");
         }
-        throw new RuntimeException("数据库不支持！");
+        return new CheckBoxTreeNode();
     }
 }

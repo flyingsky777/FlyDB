@@ -56,12 +56,13 @@ public class ConfigUtil {
                             dbConfig.setPass(password);
                             list.add(dbConfig);
                         }
-
                     }
 
                 } else if (url != null && url != "") {
-                    String username = load.getByPath("spring.datasource.username");
-                    String password = load.getByPath("spring.datasource.password");
+                    Object obj = JSONUtil.getByPath(entries, "spring.datasource");
+                    JSONObject json = JSONUtil.parseObj(obj);
+                    String username = json.getStr("username");
+                    String password = json.getStr("password");
 
                     DBConfig dbConfig = SqlUtils.getSqlInfo((String) url);
                     dbConfig.setName(username);
@@ -111,7 +112,14 @@ public class ConfigUtil {
         }
 
         List<File> dbFiles = FileUtil.loopFiles(basePath, file -> file.getName().equals("fly.db") | list.contains(file.getName()));
-        return dbFiles.stream().map(File::getPath).toArray();
+        return dbFiles.stream()
+                .map(File::getPath)
+                .map(e -> {
+                    String bp = basePath.replace("/", "\\");
+                    return e.replace(bp, "")
+                            .replace("\\src\\main\\resources\\", "");
+                })
+                .toArray();
     }
 
 

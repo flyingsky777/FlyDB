@@ -18,7 +18,9 @@ public class SubmitUI extends SimpleToolWindowPanel {
 
     private void initUI() {
         JBSplitter splitter = new JBSplitter(true);
+
         DataSubmit data = new DataSubmit(project.getBasePath());
+
         splitter.setFirstComponent(new SqlTreeUI(data));
         splitter.setSecondComponent(new SubmitMsgUI(data));
         splitter.setProportion(0.8f);

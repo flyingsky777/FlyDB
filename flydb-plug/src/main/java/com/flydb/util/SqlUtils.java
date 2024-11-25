@@ -22,7 +22,7 @@ public class SqlUtils {
 
             String trimmedUrl = url.substring("jdbc:mysql://".length());
             String[] hostPortAndDatabase = trimmedUrl.split("/", 2);
-            String hostPort = hostPortAndDatabase[0];
+            String hostPort = hostPortAndDatabase[0].split(":")[0];
             String database = hostPortAndDatabase[1].split("\\?")[0];
 
             db.setHost(hostPort);

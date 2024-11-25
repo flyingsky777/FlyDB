@@ -1,5 +1,6 @@
 package com.flydb.ui.submit;
 
+import cn.hutool.core.thread.ThreadUtil;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
@@ -36,7 +37,7 @@ public class SubmitMsgUI extends JPanel {
         // flydb选择框
         ComboBox<Object> box = new ComboBox<>(data.getFlyDBs());
         box.setFont(new Font("JetBrains Mono", Font.PLAIN, 14));
-        box.setPreferredSize(new Dimension(150, 32));
+        box.setPreferredSize(new Dimension(200, 32));
 
         // 错误提示
         JLabel error = new JLabel("错误消息");

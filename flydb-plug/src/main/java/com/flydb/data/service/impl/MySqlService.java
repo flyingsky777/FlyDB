@@ -11,6 +11,7 @@ import com.flydb.data.entity.DBConfig;
 import com.flydb.data.entity.FlyLast;
 import com.flydb.data.entity.HistoryInfo;
 import com.flydb.data.service.DBService;
+import com.github.weisj.jsvg.E;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
@@ -55,7 +56,7 @@ public class MySqlService implements DBService {
                 // 如果上一次数据为空、则将 2步的日志数据存储、初始化开始第一轮
                 saveNowBinLog(logs, ds);
             } else {
-                FlyLast flyLast = last.stream().filter(item -> item.getPos() != null).findFirst().get();
+                FlyLast flyLast = last.stream().max(Comparator.comparing(FlyLast::getLogName)).get();
                 String logName = flyLast.getLogName();
                 Long pos = flyLast.getPos();
 
@@ -203,16 +204,15 @@ public class MySqlService implements DBService {
 
         ArrayList<Entity> entities = new ArrayList<>();
         Date date = new Date();
-        List<Entity> query = Db.use(ds).query("show master status;");
-        String file = query.get(0).getStr("file");
-        Long position = query.get(0).getLong("position");
+
+        Long position = logs.get(logs.size() - 1).getFileSize();
         for (FlyLast log : logs) {
             Entity entity = Entity.create("flydb_last")
                     .set("time", date)
                     .set("log_name", log.getLogName())
                     .set("file_size", log.getFileSize())
                     .set("encrypted", log.getEncrypted())
-                    .set("pos", log.getLogName().equals(file) ? position : null);
+                    .set("pos", position);
             entities.add(entity);
         }
         Db.use(ds).insert(entities);

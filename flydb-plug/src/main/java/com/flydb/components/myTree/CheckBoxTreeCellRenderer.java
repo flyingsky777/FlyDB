@@ -36,8 +36,12 @@ public class CheckBoxTreeCellRenderer extends JPanel implements TreeCellRenderer
         String title = info.getTitle();
         if (StrUtil.isNotBlank(title)) {
             if (title.contains(",")) {
-                String field = title.split(",")[1].replace("`", "").replace("`", "");
-                label.setText(field + "    " + info.getSql());
+                if (title.split(",").length > 1) {
+                    String field = title.split(",")[1].replace("`", "").replace("`", "");
+                    label.setText(field + "    " + info.getSql());
+                } else {
+                    label.setText("    " + "    " + info.getSql());
+                }
                 String type = title.split(",")[0];
                 switch (type.toLowerCase()) {
                     case "insert":
