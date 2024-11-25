@@ -44,26 +44,6 @@ public class MySqlService implements DBService {
         this.config = config;
     }
 
-    public static void main(String[] args) {
-        String url = "jdbc:mysql://127.0.0.1:3306/flydb";
-        String username = "root";
-        String password = "sw@3100@admin";
-        String driver = "com.mysql.cj.jdbc.Driver";
-        DBConfig dbConfig = new DBConfig();
-        dbConfig.setUrl(url);
-        dbConfig.setName(username);
-        dbConfig.setPass(password);
-        dbConfig.setDriver(driver);
-        MySqlService service = new MySqlService(dbConfig);
-        boolean b = service.checkBinLog();
-        if (b) {
-            List<HistoryInfo> list = service.getList();
-            System.out.println(list);
-            List<HistoryInfo> flydb = service.getTree(list, "flydb");
-            System.out.println(JSONUtil.toJsonStr(flydb));
-        }
-//        service.saveNow();
-    }
 
     @Override
     public List<HistoryInfo> getList() {
@@ -128,7 +108,7 @@ public class MySqlService implements DBService {
                     tableName = createTable.getTable().getName();
                 } else if (statement instanceof Alter alter) {
                     operate = "DDL";
-                    type = "ALERT";
+                    type = "ALTER";
                     tableName = alter.getTable().getName();
                     // 修改表三种类型： 添加字段、删除字段、修改字段
                     LinkedHashMap<String, String> map = new LinkedHashMap<>();
@@ -182,48 +162,6 @@ public class MySqlService implements DBService {
         return list;
     }
 
-    public List<HistoryInfo> getTree(List<HistoryInfo> list, String dbName) {
-        LinkedHashMap<String, List<HistoryInfo>> ddlMap = new LinkedHashMap<>();
-        LinkedHashMap<String, List<HistoryInfo>> dmlMap = new LinkedHashMap<>();
-
-        list.forEach(item -> {
-            if (item.getDbName().equals(dbName)) {
-                if (item.getOperate().equals("DML")) {
-                    dmlMap.computeIfAbsent(item.getTableName(), k -> new ArrayList<>()).add(item);
-                }
-                if (item.getOperate().equals("DDL")) {
-                    ddlMap.computeIfAbsent(item.getTableName(), k -> new ArrayList<>()).add(item);
-                }
-            }
-        });
-
-        HistoryInfo ddlH = new HistoryInfo();
-        ddlH.setOperate("DDL");
-        ArrayList<HistoryInfo> ddl = new ArrayList<>();
-        ddlMap.forEach((k, v) -> {
-            HistoryInfo info = new HistoryInfo();
-            info.setTableName(k);
-            info.setChild(v);
-            ddl.add(info);
-        });
-        ddlH.setChild(ddl);
-
-        HistoryInfo dmlH = new HistoryInfo();
-        dmlH.setOperate("DML");
-        ArrayList<HistoryInfo> dml = new ArrayList<>();
-        dmlMap.forEach((k, v) -> {
-            HistoryInfo info = new HistoryInfo();
-            info.setTableName(k);
-            info.setChild(v);
-            dml.add(info);
-        });
-        dmlH.setChild(dml);
-
-        ArrayList<HistoryInfo> result = new ArrayList<>();
-        result.add(ddlH);
-        result.add(dmlH);
-        return result;
-    }
 
     /**
      * MySQL的变量参数binlog_format的值应为ROW，参数binlog_row_image的值应为FULL
