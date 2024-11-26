@@ -1,8 +1,11 @@
 package com.flydb.util;
 
-import com.flydb.data.entity.HistoryInfo;
 import com.flydb.components.myTree.CheckBoxTreeNode;
+import com.flydb.data.entity.HistoryInfo;
 
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,6 +51,14 @@ public class TreeUtils {
         root.add(ddlN);
         root.add(dmlN);
         return root;
+    }
+
+    // 展开节点
+    public static void expandAllNodes(JTree tree, DefaultMutableTreeNode node) {
+        for (int i = 0; i < node.getChildCount(); i++) {
+            tree.expandPath(new TreePath(((DefaultMutableTreeNode) node.getChildAt(i)).getPath()));
+            expandAllNodes(tree, (DefaultMutableTreeNode) node.getChildAt(i));
+        }
     }
 
 }

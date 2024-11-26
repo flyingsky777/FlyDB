@@ -88,6 +88,7 @@ public class ConfigUtil {
      */
     public static Object[] getFlyDBPath(String basePath) {
         List<File> files = FileUtil.loopFiles(basePath, file -> file.getName().endsWith(".yml") | file.getName().endsWith(".properties"));
+        files = files.stream().filter(file -> !file.getPath().contains("\\target\\classes")).toList();
 
         // yml 和 properties 文件里配置的 flydb.dbPath
         List<String> list = new ArrayList<>();
@@ -112,6 +113,7 @@ public class ConfigUtil {
         }
 
         List<File> dbFiles = FileUtil.loopFiles(basePath, file -> file.getName().equals("fly.db") | list.contains(file.getName()));
+        dbFiles = dbFiles.stream().filter(file -> !file.getPath().contains("\\target\\classes")).toList();
         return dbFiles.stream()
                 .map(File::getPath)
                 .map(e -> {

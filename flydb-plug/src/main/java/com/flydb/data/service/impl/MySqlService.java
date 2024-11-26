@@ -5,13 +5,11 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
 import cn.hutool.db.ds.simple.SimpleDataSource;
-import cn.hutool.json.JSONUtil;
 import com.flydb.data.entity.Binlog;
 import com.flydb.data.entity.DBConfig;
 import com.flydb.data.entity.FlyLast;
 import com.flydb.data.entity.HistoryInfo;
 import com.flydb.data.service.DBService;
-import com.github.weisj.jsvg.E;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
@@ -47,9 +45,16 @@ public class MySqlService implements DBService {
 
 
     @Override
+    public DataSource getDs() throws SQLException {
+        DataSource ds = new SimpleDataSource(config.getUrl(), config.getName(), config.getPass());
+        ds.setLoginTimeout(30);
+        return ds;
+    }
+
+    @Override
     public List<HistoryInfo> getList() {
         try {
-            DataSource ds = new SimpleDataSource(config.getUrl(), config.getName(), config.getPass());
+            DataSource ds = getDs();
             List<FlyLast> last = Db.use(ds).query("select * from flydb_last", FlyLast.class);
             List<FlyLast> logs = Db.use(ds).query("show binary logs", FlyLast.class);
             if (last.isEmpty()) {
@@ -171,7 +176,7 @@ public class MySqlService implements DBService {
      */
     public boolean checkBinLog() {
         try {
-            DataSource ds = new SimpleDataSource(config.getUrl(), config.getName(), config.getPass());
+            DataSource ds = getDs();
             List<Entity> query1 = Db.use(ds).query("SHOW VARIABLES LIKE 'binlog_format'");
             List<Entity> query2 = Db.use(ds).query("SHOW VARIABLES LIKE 'binlog_row_image'");
             String binlog_format = query1.get(0).getStr("Value");
@@ -185,7 +190,7 @@ public class MySqlService implements DBService {
     @Override
     public void saveNow() {
         try {
-            DataSource ds = new SimpleDataSource(config.getUrl(), config.getName(), config.getPass());
+            DataSource ds = getDs();
             List<FlyLast> logs = Db.use(ds).query("show binary logs", FlyLast.class);
             saveNowBinLog(logs, ds);
         } catch (SQLException e) {
