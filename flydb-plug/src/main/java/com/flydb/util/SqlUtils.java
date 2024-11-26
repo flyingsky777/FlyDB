@@ -25,6 +25,7 @@ public class SqlUtils {
             String hostPort = hostPortAndDatabase[0].split(":")[0];
             String database = hostPortAndDatabase[1].split("\\?")[0];
 
+            db.setType("mysql");
             db.setHost(hostPort);
             db.setDatabase(database);
 

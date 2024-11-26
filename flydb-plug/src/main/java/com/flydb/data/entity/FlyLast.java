@@ -9,5 +9,4 @@ public class FlyLast {
     private String logName;
     private Long fileSize;
     private String encrypted;
-    private Long pos;
 }

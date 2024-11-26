@@ -2,6 +2,7 @@ package com.flydb.util;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Dict;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -11,10 +12,7 @@ import com.flydb.data.entity.DBConfig;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ConfigUtil {
@@ -86,10 +84,11 @@ public class ConfigUtil {
      * @param basePath
      * @return
      */
-    public static Object[] getFlyDBPath(String basePath) {
+    public static FlyDBConfig getFlyDBPath(String basePath) {
         List<File> files = FileUtil.loopFiles(basePath, file -> file.getName().endsWith(".yml") | file.getName().endsWith(".properties"));
         files = files.stream().filter(file -> !file.getPath().contains("\\target\\classes")).toList();
 
+        String name = "";
         // yml 和 properties 文件里配置的 flydb.dbPath
         List<String> list = new ArrayList<>();
         for (File file : files) {
@@ -97,9 +96,11 @@ public class ConfigUtil {
             if (file.getName().endsWith(".yml")) {
                 Dict load = YamlUtil.load(FileUtil.getReader(file, Charset.defaultCharset()));
                 str = load.getByPath("flydb.db-path");
+                name = load.getByPath("flydb.name");
             } else if (file.getName().endsWith(".properties")) {
                 Props prop1 = new Props(file);
                 str = prop1.getStr("flydb.db-path");
+                name = prop1.getStr("flydb.name");
             }
 
             if (str == null | "".equals(str)) continue;
@@ -114,14 +115,17 @@ public class ConfigUtil {
 
         List<File> dbFiles = FileUtil.loopFiles(basePath, file -> file.getName().equals("fly.db") | list.contains(file.getName()));
         dbFiles = dbFiles.stream().filter(file -> !file.getPath().contains("\\target\\classes")).toList();
-        return dbFiles.stream()
-                .map(File::getPath)
+        Object[] original = dbFiles.stream().map(File::getPath).toArray();
+        Object[] simplify = dbFiles.stream().map(File::getPath)
                 .map(e -> {
                     String bp = basePath.replace("/", "\\");
                     return e.replace(bp, "")
                             .replace("\\src\\main\\resources\\", "");
-                })
-                .toArray();
+                }).toArray();
+
+
+
+        return new FlyDBConfig(name, original, simplify);
     }
 
 

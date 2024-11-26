@@ -29,4 +29,5 @@ mybatis-plus:
 flydb:
   enable: true
   enable-web: false
-  db-path: classpath:flydb/fly.db
+  db-path: classpath:fly.db
+  name: "张三"

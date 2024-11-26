@@ -24,5 +24,6 @@ public class CheckBoxTreeNodeSelectionListener extends MouseAdapter {
                 ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(node);
             }
         }
+
     }
 }

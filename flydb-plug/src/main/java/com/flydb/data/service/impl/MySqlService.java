@@ -10,7 +10,6 @@ import com.flydb.data.entity.DBConfig;
 import com.flydb.data.entity.FlyLast;
 import com.flydb.data.entity.HistoryInfo;
 import com.flydb.data.service.DBService;
-import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.alter.Alter;
@@ -52,42 +51,52 @@ public class MySqlService implements DBService {
     }
 
     @Override
-    public List<HistoryInfo> getList() {
-        try {
-            DataSource ds = getDs();
-            List<FlyLast> last = Db.use(ds).query("select * from flydb_last", FlyLast.class);
-            List<FlyLast> logs = Db.use(ds).query("show binary logs", FlyLast.class);
-            if (last.isEmpty()) {
-                // 如果上一次数据为空、则将 2步的日志数据存储、初始化开始第一轮
-                saveNowBinLog(logs, ds);
-            } else {
-                FlyLast flyLast = last.stream().max(Comparator.comparing(FlyLast::getLogName)).get();
-                String logName = flyLast.getLogName();
-                Long pos = flyLast.getPos();
+    public List<HistoryInfo> getList() throws SQLException {
+        DataSource ds = getDs();
 
-                List<FlyLast> lastList = logs.stream().filter(item -> item.getLogName().compareTo(logName) > 0).toList();
-
-                List<Binlog> binlogList = Db.use(ds).query("show binlog events in '" + logName + "' FROM " + pos + ";", Binlog.class);
-                for (FlyLast item : lastList) {
-                    List<Binlog> list2 = Db.use(ds).query("show binlog events in '" + item.getLogName() + "'", Binlog.class);
-                    binlogList.addAll(list2);
-                }
-                binlogList = binlogList.stream().filter(item -> item.getEventType().equals("Query")).toList();
-
-                return analyzeBinLog(binlogList);
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        // 是否存在 flydb_last 表
+        boolean isEmpty = Db.use(ds).query("show tables like 'flydb_last'").isEmpty();
+        if (isEmpty) {
+            Db.use(ds).execute("CREATE TABLE `flydb_last` (\n" +
+                    "  `id` int NOT NULL AUTO_INCREMENT,\n" +
+                    "  `time` datetime NOT NULL,\n" +
+                    "  `log_name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,\n" +
+                    "  `file_size` bigint NOT NULL,\n" +
+                    "  `encrypted` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,\n" +
+                    "  `pos` bigint DEFAULT NULL,\n" +
+                    "  PRIMARY KEY (`id`)\n" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
         }
-        return List.of();
+
+        List<FlyLast> last = Db.use(ds).query("select * from flydb_last", FlyLast.class);
+        List<FlyLast> logs = Db.use(ds).query("show binary logs", FlyLast.class);
+        if (last.isEmpty()) {
+            // 如果上一次数据为空、则将 2步的日志数据存储、初始化开始第一轮
+            saveNowBinLog(logs, ds);
+        } else {
+            FlyLast flyLast = last.stream().max(Comparator.comparing(FlyLast::getLogName)).get();
+            String logName = flyLast.getLogName();
+            Long pos = flyLast.getFileSize();
+
+            List<FlyLast> lastList = logs.stream().filter(item -> item.getLogName().compareTo(logName) > 0).toList();
+
+            List<Binlog> binlogList = Db.use(ds).query("show binlog events in '" + logName + "' FROM " + pos + ";", Binlog.class);
+            for (FlyLast item : lastList) {
+                List<Binlog> list2 = Db.use(ds).query("show binlog events in '" + item.getLogName() + "'", Binlog.class);
+                binlogList.addAll(list2);
+            }
+            binlogList = binlogList.stream().filter(item -> item.getEventType().equals("Query")).toList();
+
+            return analyzeBinLog(binlogList);
+        }
+        return null;
     }
 
 
     /**
      * 解析 Binlog 文件
      **/
-    public List<HistoryInfo> analyzeBinLog(List<Binlog> binlogList) throws JSQLParserException {
+    public List<HistoryInfo> analyzeBinLog(List<Binlog> binlogList) {
         List<HistoryInfo> list = new ArrayList<>();
         for (Binlog binlog : binlogList) {
             String info = binlog.getInfo();
@@ -106,60 +115,68 @@ public class MySqlService implements DBService {
                 String filedName = "";
                 String filedType = "";
 
-                Statement statement = CCJSqlParserUtil.parse(sql);
-                // DDL
-                if (statement instanceof CreateTable createTable) {
-                    operate = "DDL";
-                    type = "CREATE";
-                    tableName = createTable.getTable().getName();
-                } else if (statement instanceof Alter alter) {
-                    operate = "DDL";
-                    type = "ALTER";
-                    tableName = alter.getTable().getName();
-                    // 修改表三种类型： 添加字段、删除字段、修改字段
-                    LinkedHashMap<String, String> map = new LinkedHashMap<>();
-                    if (!alter.getAlterExpressions().isEmpty()) {
-                        for (AlterExpression alterExpression : alter.getAlterExpressions()) {
-                            if (alterExpression.getColumnName() != null) {
-                                map.put(alterExpression.getColumnName(), alterExpression.getOperation().name());
-                            } else if (!alterExpression.getColDataTypeList().isEmpty()) {
-                                map.put(alterExpression.getColDataTypeList().get(0).getColumnName(), alterExpression.getOperation().name());
+                try {
+                    Statement statement = CCJSqlParserUtil.parse(sql);
+                    // DDL
+                    if (statement instanceof CreateTable createTable) {
+                        operate = "DDL";
+                        type = "CREATE";
+                        tableName = createTable.getTable().getName();
+                    } else if (statement instanceof Alter alter) {
+                        operate = "DDL";
+                        type = "ALTER";
+                        tableName = alter.getTable().getName();
+                        // 修改表三种类型： 添加字段、删除字段、修改字段
+                        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+                        if (!alter.getAlterExpressions().isEmpty()) {
+                            for (AlterExpression alterExpression : alter.getAlterExpressions()) {
+                                if (alterExpression.getColumnName() != null) {
+                                    map.put(alterExpression.getColumnName(), alterExpression.getOperation().name());
+                                } else if (!alterExpression.getColDataTypeList().isEmpty()) {
+                                    map.put(alterExpression.getColDataTypeList().get(0).getColumnName(), alterExpression.getOperation().name());
+                                }
                             }
                         }
+                        if (!map.isEmpty()) {
+                            filedName = CollUtil.join(map.keySet(), ",");
+                            filedType = CollUtil.join(map.values(), ",");
+                        }
+
+                    } else if (statement instanceof Drop drop) {
+                        operate = "DDL";
+                        type = "DROP";
+                        tableName = drop.getName().getName();
                     }
-                    if (!map.isEmpty()) {
-                        filedName = CollUtil.join(map.keySet(), ",");
-                        filedType = CollUtil.join(map.values(), ",");
+                    // DML
+                    else if (statement instanceof Insert insert) {
+                        operate = "DML";
+                        type = "INSERT";
+                        tableName = insert.getTable().getName();
+                    } else if (statement instanceof Delete delete) {
+                        operate = "DML";
+                        type = "DELETE";
+                        tableName = delete.getTable().getName();
+                    } else if (statement instanceof Update update) {
+                        operate = "DML";
+                        type = "UPDATE";
+                        tableName = update.getTable().getName();
                     }
 
-                } else if (statement instanceof Drop drop) {
-                    operate = "DDL";
-                    type = "DROP";
-                    tableName = drop.getName().getName();
-                }
-                // DML
-                else if (statement instanceof Insert insert) {
-                    operate = "DML";
-                    type = "INSERT";
-                    tableName = insert.getTable().getName();
-                } else if (statement instanceof Delete delete) {
-                    operate = "DML";
-                    type = "DELETE";
-                    tableName = delete.getTable().getName();
-                } else if (statement instanceof Update update) {
-                    operate = "DML";
-                    type = "UPDATE";
-                    tableName = update.getTable().getName();
-                }
-
-                if (StrUtil.isNotBlank(tableName)) {
+                    if (StrUtil.isNotBlank(tableName)) {
+                        HistoryInfo hi = new HistoryInfo();
+                        hi.setOperate(operate);
+                        hi.setType(type);
+                        hi.setDbName(dbName);
+                        hi.setTableName(tableName.replace("`", "").replace("`", "").trim());
+                        hi.setFieldName(filedName);
+                        hi.setFieldType(filedType);
+                        hi.setSql(sql);
+                        list.add(hi);
+                    }
+                } catch (Exception ignored) {
                     HistoryInfo hi = new HistoryInfo();
-                    hi.setOperate(operate);
-                    hi.setType(type);
+                    hi.setOperate("其他");
                     hi.setDbName(dbName);
-                    hi.setTableName(tableName.replace("`", "").replace("`", "").trim());
-                    hi.setFieldName(filedName);
-                    hi.setFieldType(filedType);
                     hi.setSql(sql);
                     list.add(hi);
                 }
@@ -174,28 +191,20 @@ public class MySqlService implements DBService {
      *
      * @return
      */
-    public boolean checkBinLog() {
-        try {
-            DataSource ds = getDs();
-            List<Entity> query1 = Db.use(ds).query("SHOW VARIABLES LIKE 'binlog_format'");
-            List<Entity> query2 = Db.use(ds).query("SHOW VARIABLES LIKE 'binlog_row_image'");
-            String binlog_format = query1.get(0).getStr("Value");
-            String binlog_row_image = query2.get(0).getStr("Value");
-            return binlog_format.equals("ROW") && binlog_row_image.equals("FULL");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public boolean check() throws SQLException {
+        DataSource ds = getDs();
+        List<Entity> query1 = Db.use(ds).query("SHOW VARIABLES LIKE 'binlog_format'");
+        List<Entity> query2 = Db.use(ds).query("SHOW VARIABLES LIKE 'binlog_row_image'");
+        String binlog_format = query1.get(0).getStr("Value");
+        String binlog_row_image = query2.get(0).getStr("Value");
+        return binlog_format.equals("ROW") && binlog_row_image.equals("FULL");
     }
 
     @Override
-    public void saveNow() {
-        try {
-            DataSource ds = getDs();
-            List<FlyLast> logs = Db.use(ds).query("show binary logs", FlyLast.class);
-            saveNowBinLog(logs, ds);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public void saveNow() throws SQLException {
+        DataSource ds = getDs();
+        List<FlyLast> logs = Db.use(ds).query("show binary logs", FlyLast.class);
+        saveNowBinLog(logs, ds);
     }
 
     /**
@@ -210,14 +219,13 @@ public class MySqlService implements DBService {
         ArrayList<Entity> entities = new ArrayList<>();
         Date date = new Date();
 
-        Long position = logs.get(logs.size() - 1).getFileSize();
+
         for (FlyLast log : logs) {
             Entity entity = Entity.create("flydb_last")
                     .set("time", date)
                     .set("log_name", log.getLogName())
                     .set("file_size", log.getFileSize())
-                    .set("encrypted", log.getEncrypted())
-                    .set("pos", position);
+                    .set("encrypted", log.getEncrypted());
             entities.add(entity);
         }
         Db.use(ds).insert(entities);

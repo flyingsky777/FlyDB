@@ -15,13 +15,15 @@ public class TreeUtils {
     public static CheckBoxTreeNode getTree(List<HistoryInfo> list, String dbName) {
         LinkedHashMap<String, List<HistoryInfo>> ddlMap = new LinkedHashMap<>();
         LinkedHashMap<String, List<HistoryInfo>> dmlMap = new LinkedHashMap<>();
+        LinkedHashMap<String, List<HistoryInfo>> otherMap = new LinkedHashMap<>();
         list.forEach(item -> {
             if (item.getDbName().equals(dbName)) {
                 if (item.getOperate().equals("DML")) {
                     dmlMap.computeIfAbsent(item.getTableName(), k -> new ArrayList<>()).add(item);
-                }
-                if (item.getOperate().equals("DDL")) {
+                } else if (item.getOperate().equals("DDL")) {
                     ddlMap.computeIfAbsent(item.getTableName(), k -> new ArrayList<>()).add(item);
+                } else if (item.getOperate().equals("其他")) {
+                    otherMap.computeIfAbsent(item.getTableName(), k -> new ArrayList<>()).add(item);
                 }
             }
         });
@@ -47,9 +49,20 @@ public class TreeUtils {
             v.forEach(item -> ddlTable.add(new CheckBoxTreeNode(item)));
         });
 
+        CheckBoxTreeNode otherN = new CheckBoxTreeNode(new HistoryInfo("其他"));
+        otherMap.forEach((k, v) -> {
+            HistoryInfo historyInfo = new HistoryInfo();
+            historyInfo.setTableName(k);
+            CheckBoxTreeNode otherTable = new CheckBoxTreeNode(historyInfo);
+            otherN.add(otherTable);
+
+            v.forEach(item -> otherTable.add(new CheckBoxTreeNode(item)));
+        });
+
         CheckBoxTreeNode root = new CheckBoxTreeNode(new HistoryInfo("root"));
         root.add(ddlN);
         root.add(dmlN);
+        root.add(otherN);
         return root;
     }
 

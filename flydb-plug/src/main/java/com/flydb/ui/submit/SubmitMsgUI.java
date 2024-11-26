@@ -12,8 +12,10 @@ import java.awt.*;
 
 @Getter
 public class SubmitMsgUI extends JPanel {
-    private  JButton updateConfig;
-    private  JLabel error;
+    private JButton submit;
+    private JBTextArea area;
+    private JButton updateConfig;
+    private JLabel error;
     private ComboBox<Object> flyDb;
     private DataSubmit data;
 
@@ -21,23 +23,23 @@ public class SubmitMsgUI extends JPanel {
         this.data = data;
         setLayout(new BorderLayout());
 
-        JBTextArea text = new JBTextArea();
-        text.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        text.setAlignmentX(JTextField.LEFT);
-        text.setAlignmentY(JTextField.TOP);
-        text.setLineWrap(true);
-        text.setWrapStyleWord(true);
-        text.setBorder(JBUI.Borders.empty(5));
-        text.setFont(new Font("JetBrains Mono", Font.PLAIN, 13));
-        text.getEmptyText().setText("请输入提交内容");
+        area = new JBTextArea();
+        area.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        area.setAlignmentX(JTextField.LEFT);
+        area.setAlignmentY(JTextField.TOP);
+        area.setLineWrap(true);
+        area.setWrapStyleWord(true);
+        area.setBorder(JBUI.Borders.empty(5));
+        area.setFont(new Font("JetBrains Mono", Font.PLAIN, 13));
+        area.getEmptyText().setText("请输入提交内容");
 
         // 滚动条
-        JBScrollPane jbScrollPane = new JBScrollPane(text);
+        JBScrollPane jbScrollPane = new JBScrollPane(area);
         jbScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         jbScrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         // 提交按钮
-        JButton submit = new JButton("提交");
+        submit = new JButton("提交");
         submit.setFont(new Font("微软雅黑", Font.PLAIN, 13));
         submit.setPreferredSize(new Dimension(80, 32));
 
@@ -75,15 +77,5 @@ public class SubmitMsgUI extends JPanel {
 
         add(jbScrollPane, BorderLayout.CENTER);
         add(bottom, BorderLayout.SOUTH);
-
-
-        // 业务逻辑
-        submit.addActionListener(e -> {
-            String content = text.getText();
-            if (content.equals("")) {
-                error.setText("请输入提交内容！");
-                error.setVisible(true);
-            }
-        });
     }
 }

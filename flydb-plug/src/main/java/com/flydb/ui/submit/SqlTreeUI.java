@@ -12,7 +12,7 @@ import java.awt.*;
 
 @Getter
 public class SqlTreeUI extends JPanel {
-    private  JButton refresh;
+    private JButton refresh;
     private Tree tree;
     private ComboBox<Object> host;
     private ComboBox<Object> databases;
@@ -57,6 +57,7 @@ public class SqlTreeUI extends JPanel {
         tree.setRootVisible(false);
         tree.setCellRenderer(new CheckBoxTreeCellRenderer());
         tree.addMouseListener(new CheckBoxTreeNodeSelectionListener());
+        tree.getEmptyText().setText("请点击刷新按钮、获取数据库信息！");
 
         // 滚动条
         JBScrollPane jbScrollPane = new JBScrollPane(tree);

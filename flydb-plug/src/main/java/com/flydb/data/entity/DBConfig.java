@@ -8,6 +8,7 @@ public class DBConfig {
     private String name;
     private String pass;
     private String driver;
+    private String type;
 
     private String host;
     private String database;

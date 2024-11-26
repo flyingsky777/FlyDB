@@ -1,12 +1,17 @@
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    #    url: jdbc:mysql://172.18.23.149:3306/flydb?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    url: jdbc:mysql://127.0.0.1:3306/flydb?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: sw@3100@admin
-#    dynamic:
-#      datasource:
-#        primary:
-#        master:
-#          url: jdbc:mysql://127.0.0.1:3306/1111111?useUnicode=true&characterEncoding=UTF-8&serverTimezone=As
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    #    url: jdbc:mysql://172.18.23.149:3306/flydb?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+#    url: jdbc:mysql://127.0.0.1:3306/flydb?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+#    username: root
+#    password: sw@3100@admin
+    dynamic:
+      datasource:
+        primary:
+          url: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+          username: root
+          password: sw@3100@admin
+        master:
+          url: jdbc:mysql://127.0.0.1:3306/flydb?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+          username: root
+          password: sw@3100@admin

@@ -9,16 +9,20 @@ import java.util.List;
 
 public interface DBService {
 
-     DataSource getDs() throws SQLException;
+    DataSource getDs() throws SQLException;
+    /**
+     * 检测是否支持
+     */
+    boolean check() throws SQLException;
 
     /**
      * 获取 DDL列表 和 DML 列表
      */
-    List<HistoryInfo> getList();
+    List<HistoryInfo> getList() throws SQLException;
 
     /**
      * 保存当前日志
      */
-    void saveNow();
+    void saveNow() throws SQLException;
 
 }
