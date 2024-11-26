@@ -4,22 +4,36 @@ import com.intellij.ui.table.JBTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Vector;
 
-public class MyJBTable<T> {
-
-    private BeanTableModel<T> beanTableModel;
-
+public class MyJBTable<T> extends JBTable {
     private List<ColumnOption> options;
 
-    public JBTable create(List<T> list, List<ColumnOption> options) {
+    public MyJBTable(List<ColumnOption> options) {
         this.options = options;
 
-        beanTableModel = new BeanTableModel<>(list, options.size(), (invoke, rowIndex, columnIndex) -> {
+        // 隐藏表头
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setPreferredSize(new Dimension(0, 0));
+        this.getTableHeader().setVisible(false);
+        this.getTableHeader().setDefaultRenderer(renderer);
+
+        // 去掉网格线
+        this.setShowGrid(false);
+        this.setShowHorizontalLines(false);
+        this.setShowVerticalLines(false);
+        this.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+
+        // 去掉边框
+        this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+    }
+
+    public BeanTableModel<T> getBeanModel(List<T> list) {
+        return new BeanTableModel<>(list, options.size(), (invoke, rowIndex, columnIndex) -> {
             Class<?> aClass = invoke.getClass();
             String field = options.get(columnIndex).getField();
             try {
@@ -30,24 +44,11 @@ public class MyJBTable<T> {
                 return "";
             }
         });
+    }
 
-        JBTable historyTable = new JBTable(beanTableModel);
-        // 隐藏表头
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setPreferredSize(new Dimension(0, 0));
-        historyTable.getTableHeader().setVisible(false);
-        historyTable.getTableHeader().setDefaultRenderer(renderer);
-
-        // 去掉网格线
-        historyTable.setShowGrid(false);
-        historyTable.setShowHorizontalLines(false);
-        historyTable.setShowVerticalLines(false);
-
-        // 默认空文字
-        historyTable.getEmptyText().setText("Is empty");
-
+    public void setColumnConfig() {
         for (int i = 0; i < options.size(); i++) {
-            TableColumn column = historyTable.getColumnModel().getColumn(i);
+            TableColumn column = this.getColumnModel().getColumn(i);
 
             // 宽度设置
             Integer width = options.get(i).getWidth();
@@ -66,37 +67,17 @@ public class MyJBTable<T> {
             } else if (options.get(i).getAlign().equals("center")) {
                 cr.setHorizontalAlignment(SwingConstants.CENTER);
             }
-
             column.setCellRenderer(cr);
         }
-
-        return historyTable;
     }
 
-    public void reloadData(List<T> historyList) {
-        // 清空旧数据
-        beanTableModel.getDataVector().clear();
-        beanTableModel.fireTableDataChanged();
+    public void setData(List<T> historyList) {
+        BeanTableModel<T> model = getBeanModel(historyList);
+        this.setModel(model);
+        setColumnConfig();
+    }
 
-        historyList.forEach(item -> {
-            Class<?> aClass = item.getClass();
-            Vector<Object> rowData = new Vector<>();
-
-            options.forEach(options -> {
-                String field = options.getField();
-                try {
-                    Field declaredField = aClass.getDeclaredField(field);
-                    declaredField.setAccessible(true);
-                    rowData.add(declaredField.get(item));
-                } catch (Exception e) {
-                    rowData.add("");
-                }
-            });
-
-            rowData.forEach(System.out::println);
-            beanTableModel.addRow(rowData);
-        });
-
-        beanTableModel.fireTableDataChanged();
+    public void setText(String text) {
+        this.getEmptyText().setText(text);
     }
 }

@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
 import cn.hutool.db.ds.simple.SimpleDataSource;
+import com.alibaba.druid.pool.DruidDataSource;
 import com.flydb.data.entity.Binlog;
 import com.flydb.data.entity.DBConfig;
 import com.flydb.data.entity.FlyLast;
@@ -37,21 +38,19 @@ import java.util.*;
  */
 public class MySqlService implements DBService {
     private final DBConfig config;
+    private DruidDataSource ds2 = null;
 
     public MySqlService(DBConfig config) {
         this.config = config;
     }
 
-
     @Override
     public DataSource getDs() throws SQLException {
-        DataSource ds = new SimpleDataSource(config.getUrl(), config.getName(), config.getPass());
-        ds.setLoginTimeout(30);
-        return ds;
+        return new SimpleDataSource(config.getUrl(), config.getName(), config.getPass());
     }
 
     @Override
-    public List<HistoryInfo> getList() throws SQLException {
+    public List<HistoryInfo> getList() throws Exception {
         DataSource ds = getDs();
 
         // 是否存在 flydb_last 表
@@ -108,6 +107,9 @@ public class MySqlService implements DBService {
                         .trim();
 
                 String sql = info.split(";")[1].trim();
+
+                if (sql.contains("/*"))
+                    sql = sql.substring(0, sql.indexOf("/*"));
 
                 String operate = "";
                 String type = "";
@@ -191,7 +193,7 @@ public class MySqlService implements DBService {
      *
      * @return
      */
-    public boolean check() throws SQLException {
+    public boolean checkLog() throws Exception {
         DataSource ds = getDs();
         List<Entity> query1 = Db.use(ds).query("SHOW VARIABLES LIKE 'binlog_format'");
         List<Entity> query2 = Db.use(ds).query("SHOW VARIABLES LIKE 'binlog_row_image'");
@@ -201,7 +203,7 @@ public class MySqlService implements DBService {
     }
 
     @Override
-    public void saveNow() throws SQLException {
+    public void saveNow() throws Exception {
         DataSource ds = getDs();
         List<FlyLast> logs = Db.use(ds).query("show binary logs", FlyLast.class);
         saveNowBinLog(logs, ds);
@@ -213,7 +215,7 @@ public class MySqlService implements DBService {
      * @param logs
      * @throws SQLException
      */
-    public void saveNowBinLog(List<FlyLast> logs, DataSource ds) throws SQLException {
+    public void saveNowBinLog(List<FlyLast> logs, DataSource ds) throws Exception {
         Db.use(ds).execute("TRUNCATE TABLE flydb_last;");
 
         ArrayList<Entity> entities = new ArrayList<>();

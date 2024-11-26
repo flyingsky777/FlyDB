@@ -46,7 +46,7 @@ public class DataSubmit {
     }
 
 
-    public String updateTreeData(Object sHost, Object sDb, Tree tree) {
+    public String updateTreeData(String sHost, String sDb) {
         Optional<DBConfig> first = mysqlList.stream()
                 .filter(e -> e.getHost().equals(sHost) && e.getDatabase().equals(sDb))
                 .findFirst();
@@ -58,7 +58,7 @@ public class DataSubmit {
 
         try {
             DBService service = DBFactory.getDBService(dbConfig);
-            boolean b = service.check();
+            boolean b = service.checkLog();
             if (b) {
                 List<HistoryInfo> list = service.getList();
                 if (!list.isEmpty()) {
@@ -74,12 +74,12 @@ public class DataSubmit {
             } else {
                 return "不支持的数据库类型、请查看官网说明！";
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             return "数据库连接失败！错误消息：" + e.getMessage();
         }
     }
 
-    public void submitDb(Object sHost, Object sDb) throws SQLException {
+    public void submitDb(String sHost, String sDb) throws Exception {
         DBConfig dbConfig = mysqlList.stream()
                 .filter(e -> e.getHost().equals(sHost) && e.getDatabase().equals(sDb))
                 .findFirst()
@@ -115,7 +115,7 @@ public class DataSubmit {
         swingWorker.execute();
     }
 
-    public void updateTree(Object sHost, Object sDb, Tree tree) {
+    public void updateTree(String sHost, String sDb, Tree tree) {
         SwingWorker<Void, Void> swingWorker1 = new SwingWorker<>() {
 
             private String result;
@@ -123,7 +123,7 @@ public class DataSubmit {
             @Override
             protected Void doInBackground() throws Exception {
                 newRoot = null;
-                result = updateTreeData(sHost, sDb, tree);
+                result = updateTreeData(sHost, sDb);
                 return null;
             }
 

@@ -25,6 +25,11 @@ public class BeanTableModel<T> extends DefaultTableModel {
     }
 
     @Override
+    public boolean isCellEditable(int row, int column) {
+        return false;
+    }
+
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         T obj = list.get(rowIndex);
         return invoke.run(obj, rowIndex, columnIndex);

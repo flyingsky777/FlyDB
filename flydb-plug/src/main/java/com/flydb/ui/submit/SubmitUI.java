@@ -58,8 +58,8 @@ public class SubmitUI extends SimpleToolWindowPanel {
 
         // 手动刷新数据库
         sqlTreeUI.getRefresh().addActionListener(e -> {
-            Object sHost = sqlTreeUI.getHost().getSelectedItem();
-            Object sDb = sqlTreeUI.getDatabases().getSelectedItem();
+            String sHost = (String) sqlTreeUI.getHost().getSelectedItem();
+            String sDb = (String) sqlTreeUI.getDatabases().getSelectedItem();
 
             submitMsgUI.getError().setVisible(false);
             data.updateTree(sHost, sDb, sqlTreeUI.getTree());
@@ -91,12 +91,13 @@ public class SubmitUI extends SimpleToolWindowPanel {
         try {
             String path = (String) data.getFlyDBConfig().getOriginal()[selectedIndex];
             String name = data.getFlyDBConfig().getName();
+            String sHost = (String) sqlTreeUI.getHost().getSelectedItem();
+            String sDb = (String) sqlTreeUI.getDatabases().getSelectedItem();
+
             HistoryService historyService = new HistoryService(path);
-            historyService.addHistory(content, StrUtil.isNotBlank(name) ? name : "flydb", selectedList);
+            historyService.addHistory(content, StrUtil.isNotBlank(name) ? name : "flydb", sDb, selectedList);
 
             // 提交成功后、更新flydb_last、再更新一个列表
-            Object sHost = sqlTreeUI.getHost().getSelectedItem();
-            Object sDb = sqlTreeUI.getDatabases().getSelectedItem();
             data.submitDb(sHost, sDb);
             data.updateTree(sHost, sDb, sqlTreeUI.getTree());
             submitMsgUI.getArea().setText(null);

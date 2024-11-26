@@ -25,14 +25,17 @@ public class HistoryService {
 
     private DataSource getDs() throws SQLException {
         SimpleDataSource ds = new SimpleDataSource("jdbc:sqlite:" + dbPath, "", "");
-        ds.setLoginTimeout(30);
+        ds.setLoginTimeout(10);
         return ds;
     }
 
-    public List<History> getHistoryList(String key) throws SQLException {
+    public List<History> getHistoryList(String key, String dbName) throws SQLException {
         String sql = " select * from history where 1=1 ";
         if (StrUtil.isNotBlank(key)) {
-            sql += " and title like %" + key + "% ";
+            sql += " and title like '%" + key + "%' ";
+        }
+        if (StrUtil.isNotBlank(dbName)) {
+            sql += " and dbName like '%" + dbName + "%' ";
         }
         sql += " order by time desc ";
         DataSource ds = getDs();
@@ -46,15 +49,16 @@ public class HistoryService {
         return Db.use(ds).query(sql, HistoryInfo.class);
     }
 
-    public void addHistory(String title, String name, List<HistoryInfo> items) throws SQLException {
+    public void addHistory(String title, String name, String dbName, List<HistoryInfo> items) throws SQLException {
 
         String historyId = IdUtil.getSnowflakeNextIdStr();
         Entity insertHistory = Entity.create("history")
                 .set("id", historyId)
                 .set("title", title)
                 .set("name", name)
+                .set("dbName", dbName)
                 .set("time", DateUtil.format(DateUtil.date(), "yyyy/MM/dd HH:mm"))
-                .set("status", "historyId");
+                .set("status", "");
 
         ArrayList<Entity> insertInfoList = new ArrayList<>();
         for (HistoryInfo info : items) {
@@ -99,6 +103,7 @@ public class HistoryService {
             Db.use(ds).execute("CREATE TABLE \"history\" (\n" +
                     "  \"id\" text NOT NULL,\n" +
                     "  \"title\" TEXT NOT NULL,\n" +
+                    "  \"dbName\" TEXT NOT NULL,\n" +
                     "  \"name\" TEXT NOT NULL,\n" +
                     "  \"time\" text NOT NULL,\n" +
                     "  \"status\" TEXT NOT NULL,\n" +
