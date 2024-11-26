@@ -7,7 +7,7 @@
 
     <!-- 插件的描述，在插件发布后会在插件首页显示 -->
     <description>
-        FlyDB 是一个数据库版本管理工具, 支持数据库文件版本管理，相 当于Flyway liquibase 更方便快捷
+        FlyDB Plugin 是一个数据库版本管理工具插件, 支持自动获取SQL更新记录、快速提交。结合FlyDB框架自动实现数据库版本管理。
     </description>
 
     <!-- 插件的依赖配置， 任何插件都应该配置platform， 才可以使用一些基本的功能 -->
@@ -16,11 +16,11 @@
     <!--插件扩展点配置， 后面我们的一些扩展会在这里配置 -->
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="FlyDB提交" factoryClass="com.flydb.ui.submit.SubmitToolWindow" icon="/icons/logo.svg" anchor="left"/>
-        <toolWindow id="FlyDB历史" factoryClass="com.flydb.ui.history.HistoryToolWindow" icon="/icons/logo.svg" anchor="bottom"/>
+        <!--        <toolWindow id="FlyDB历史" factoryClass="com.flydb.ui.history.HistoryToolWindow" icon="/icons/logo.svg" anchor="bottom"/>-->
     </extensions>
 
     <actions>
-        <action id="FlyDB.Action" class="com.flydb.ui.sync.BeanSyncAction" text="字段同步" icon="/icons/logo.svg"/>
+        <!--        <action id="FlyDB.Action" class="com.flydb.ui.sync.BeanSyncAction" text="字段同步" icon="/icons/logo.svg"/>-->
     </actions>
 
     <!-- 插件的兼容版本，这里使用的是build number -->
