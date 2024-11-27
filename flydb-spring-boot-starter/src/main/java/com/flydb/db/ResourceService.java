@@ -1,4 +1,4 @@
-package com.flydb.service;
+package com.flydb.db;
 
 import cn.hutool.db.Db;
 import cn.hutool.db.ds.simple.SimpleDataSource;
@@ -11,12 +11,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Service
-public class FlySqliteService {
+public class ResourceService {
     public void init(String dbPath) {
         DataSource ds = new SimpleDataSource("jdbc:sqlite:" + dbPath, "", "");
         try {
-            Db.use(ds).execute("CREATE TABLE IF NOT EXISTS  history (id text NOT NULL, title TEXT NOT NULL, name TEXT NOT NULL, time text NOT NULL, status TEXT NOT NULL, PRIMARY KEY (id))");
-            Db.use(ds).execute("CREATE TABLE IF NOT EXISTS  history_info (historyId text NOT NULL, operate TEXT, type TEXT, dbName TEXT, tableName TEXT, fieldName TEXT, primaryVal TEXT, sql TEXT, time text,PRIMARY KEY ( historyId ))");
+            Db.use(ds).execute("CREATE TABLE IF NOT EXISTS  history (id text NOT NULL, title TEXT NOT NULL, name TEXT NOT NULL, dbName TEXT NOT NULL, time text NOT NULL, status TEXT NOT NULL, PRIMARY KEY (id))");
+            Db.use(ds).execute("CREATE TABLE IF NOT EXISTS  history_info (historyId text NOT NULL, operate TEXT, type TEXT, dbName TEXT, tableName TEXT, fieldName TEXT,  sql TEXT, time text,PRIMARY KEY ( historyId ))");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

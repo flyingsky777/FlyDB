@@ -1,6 +1,7 @@
-package com.flydb.db;
+package com.flydb.db.impl;
 
 import com.flydb.config.FlyDBProperties;
+import com.flydb.db.TargetService;
 import com.flydb.entity.FlydbLogs;
 import com.flydb.entity.Table;
 import com.flydb.entity.TableInfo;
@@ -10,7 +11,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @Lazy
-public class MySqlService implements FlyDBService {
+public class MySqlService implements TargetService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired

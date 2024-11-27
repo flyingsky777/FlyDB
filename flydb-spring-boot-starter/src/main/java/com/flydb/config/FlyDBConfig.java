@@ -1,8 +1,8 @@
 package com.flydb.config;
 
-import com.flydb.db.FlyDBService;
-import com.flydb.db.MySqlService;
-import com.flydb.db.OracleService;
+import com.flydb.db.TargetService;
+import com.flydb.db.impl.MySqlService;
+import com.flydb.db.impl.OracleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +33,7 @@ public class FlyDBConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public FlyDBService dbService() {
+    public TargetService dbService() {
         try (Connection connection = dataSource.getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             String type = metaData.getDatabaseProductName();

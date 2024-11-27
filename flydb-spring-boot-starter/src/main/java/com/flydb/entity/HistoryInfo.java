@@ -19,12 +19,6 @@ public class HistoryInfo {
 
     private String fieldName;
 
-    // 主键字段
-    private String primaryKey;
-
-    // 主键值
-    private String primaryVal;
-
     private String sql;
 
     private String time;

@@ -6,6 +6,7 @@ import lombok.Data;
 public class History {
     private String id;
     private String title;
+    private String dbName;
     private String name;
     private String time;
 }

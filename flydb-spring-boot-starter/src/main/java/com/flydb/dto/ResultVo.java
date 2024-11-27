@@ -1,4 +1,4 @@
-package com.flydb.entity;
+package com.flydb.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

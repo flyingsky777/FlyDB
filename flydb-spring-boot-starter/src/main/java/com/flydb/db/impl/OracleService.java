@@ -1,5 +1,6 @@
-package com.flydb.db;
+package com.flydb.db.impl;
 
+import com.flydb.db.TargetService;
 import com.flydb.entity.FlydbLogs;
 import com.flydb.entity.Table;
 import com.flydb.entity.TableInfo;
@@ -7,14 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
 @Component
 @Lazy
-public class OracleService implements FlyDBService {
+public class OracleService implements TargetService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

@@ -1,8 +1,8 @@
 package com.flydb.config;
 
 import cn.hutool.core.io.FileUtil;
-import com.flydb.db.FlyDBService;
-import com.flydb.service.FlySqliteService;
+import com.flydb.db.ResourceService;
+import com.flydb.db.TargetService;
 import com.flydb.service.SyncData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +26,11 @@ public class InitFlyDB implements CommandLineRunner {
     @Autowired
     private FlyDBProperties flyDBProperties;
     @Autowired
-    private FlyDBService dbService;
+    private TargetService dbService;
     @Autowired
     private ResourceLoader resourceLoader;
     @Autowired
-    private FlySqliteService sqliteService;
+    private ResourceService resourceService;
     @Autowired
     private SyncData syncData;
 
@@ -76,7 +76,7 @@ public class InitFlyDB implements CommandLineRunner {
             flydbPath = resource.getFile().getPath();
         }
         // 执行初始化表
-        sqliteService.init(flydbPath);
+        resourceService.init(flydbPath);
 
         // 执行数据同步
         log.info("===============> FlyDB 开始同步 <===============");

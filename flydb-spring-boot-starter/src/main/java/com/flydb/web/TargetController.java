@@ -1,7 +1,7 @@
 package com.flydb.web;
 
-import com.flydb.db.FlyDBService;
-import com.flydb.entity.ResultVo;
+import com.flydb.db.TargetService;
+import com.flydb.dto.ResultVo;
 import com.flydb.entity.Table;
 import com.flydb.entity.TableInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/flydb/sql")
-public class SQLController {
+@RequestMapping("/flydb/target")
+public class TargetController {
     @Autowired
-    private FlyDBService dbService;
+    private TargetService dbService;
 
     // 获取所有表名
     @GetMapping("/getTableNames")

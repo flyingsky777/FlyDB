@@ -7,7 +7,7 @@ import com.flydb.entity.TableInfo;
 import java.util.List;
 import java.util.Map;
 
-public interface FlyDBService {
+public interface TargetService {
 
     /**
      * 表是否存在
