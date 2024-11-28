@@ -1,11 +1,11 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.18.23.149:3306/flydb?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    #    url: jdbc:mysql://127.0.0.1:3306/flydb?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    #    url: jdbc:mysql://172.18.23.149:3306/flydb?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/flydb?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
-#    password: sw@3100@admin
-    password: 123456
+    password: sw@3100@admin
+#    password: 123456
 #    dynamic:
 #      datasource:
 #        primary:

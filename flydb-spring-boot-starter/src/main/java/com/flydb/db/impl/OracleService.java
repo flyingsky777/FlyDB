@@ -4,53 +4,46 @@ import com.flydb.db.TargetService;
 import com.flydb.entity.FlydbLogs;
 import com.flydb.entity.Table;
 import com.flydb.entity.TableInfo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
 
-@Component
-@Lazy
+@Slf4j
 public class OracleService implements TargetService {
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Override
     public boolean isExist(String dbName) {
-        System.out.println("oracle");
         return false;
     }
 
     @Override
-    public boolean createLogsTable() {
-        return false;
+    public void createLogsTable() {
     }
 
     @Override
-    public boolean addLogs(FlydbLogs logs) {
-        return false;
+    public List<FlydbLogs> getLogs() {
+        return List.of();
     }
 
     @Override
-    public boolean updateLogs(FlydbLogs logs) {
+    public boolean addLogs(FlydbLogs logs, boolean isOldDel) {
         return false;
     }
+
 
     @Override
     public List<Table> getTableNames() {
-        return null;
+        return List.of();
     }
 
     @Override
     public List<TableInfo> getTableInfo(String tableName) {
-        return null;
+        return List.of();
     }
 
     @Override
     public List<Map<String, Object>> getTableData(String tableName, int page, int pageSize) {
-        return null;
+        return List.of();
     }
 }

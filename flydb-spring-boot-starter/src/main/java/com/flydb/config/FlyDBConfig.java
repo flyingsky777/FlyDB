@@ -3,6 +3,7 @@ package com.flydb.config;
 import com.flydb.db.TargetService;
 import com.flydb.db.impl.MySqlService;
 import com.flydb.db.impl.OracleService;
+import com.flydb.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +25,9 @@ public class FlyDBConfig implements WebMvcConfigurer {
     @Autowired
     FlyDbWebInterceptor flyDbWebInterceptor;
     @Autowired
-    private DataSource dataSource;
+    DataSource dataSource;
+    @Autowired
+    FlyDBProperties properties;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -37,6 +40,9 @@ public class FlyDBConfig implements WebMvcConfigurer {
         try (Connection connection = dataSource.getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             String type = metaData.getDatabaseProductName();
+            String url = metaData.getURL();
+            String database = SqlUtils.getDatabase(url);
+            properties.setDbName(database);
             log.info("===============> FlyDB 数据库类型：" + type + " <===============");
             switch (type) {
                 case "MySQL":

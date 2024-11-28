@@ -17,17 +17,17 @@ public interface TargetService {
     /**
      * 创建记录表
      */
-    boolean createLogsTable();
+    void createLogsTable();
+
+    /**
+     * 获取 flydb_logs 数据
+     */
+    List<FlydbLogs> getLogs();
 
     /**
      * 添加一条记录
      */
-    boolean addLogs(FlydbLogs logs);
-
-    /**
-     * 更新记录
-     */
-    boolean updateLogs(FlydbLogs logs);
+    boolean addLogs(FlydbLogs logs, boolean isOldDel);
 
     /**
      * 获取所有表名

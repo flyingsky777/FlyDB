@@ -46,5 +46,8 @@ public class FlyDBProperties {
      */
     private String password;
 
-
+    /**
+     * 数据库名称
+     */
+    private String dbName;
 }
