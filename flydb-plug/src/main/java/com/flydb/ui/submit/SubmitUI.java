@@ -99,6 +99,7 @@ public class SubmitUI extends SimpleToolWindowPanel {
 
             // 提交成功后、更新flydb_last、再更新一个列表
             data.submitDb(sHost, sDb);
+            // TODO 自动在本机添加一条记录、防止重启时报错。
             data.updateTree(sHost, sDb, sqlTreeUI.getTree());
             submitMsgUI.getArea().setText(null);
             submitMsgUI.getError().setVisible(false);
