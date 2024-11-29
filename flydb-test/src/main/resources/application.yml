@@ -27,7 +27,10 @@ mybatis-plus:
       logic-not-delete-value: 0 # 逻辑未删除值
 
 flydb:
-  enable: true
-  enable-web: false
-  db-path: classpath:fly.db
   name: "张三"
+  enable: true
+  db-path: classpath:fly.db
+  enable-web: true
+  account: root
+  password: 1
+
