@@ -62,13 +62,13 @@
 <!--            <version>3.41.2.2</version>-->
 <!--        </dependency>-->
 
-        <dependency>
-            <groupId>com.fly</groupId>
-            <artifactId>flydb-spring-boot-starter</artifactId>
-            <version>0.0.1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/flydb-spring-boot-starter-0.0.1.jar</systemPath>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.fly</groupId>-->
+<!--            <artifactId>flydb-spring-boot-starter</artifactId>-->
+<!--            <version>0.0.1</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${basedir}/lib/flydb-spring-boot-starter-0.0.1.jar</systemPath>-->
+<!--        </dependency>-->
 
     </dependencies>
 

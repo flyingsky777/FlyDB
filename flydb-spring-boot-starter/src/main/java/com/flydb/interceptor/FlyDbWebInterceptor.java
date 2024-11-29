@@ -1,5 +1,6 @@
-package com.flydb.config;
+package com.flydb.interceptor;
 
+import com.flydb.config.FlyDBProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;

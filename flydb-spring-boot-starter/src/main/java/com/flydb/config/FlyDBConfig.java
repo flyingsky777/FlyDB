@@ -3,6 +3,8 @@ package com.flydb.config;
 import com.flydb.db.TargetService;
 import com.flydb.db.impl.MySqlService;
 import com.flydb.db.impl.OracleService;
+import com.flydb.interceptor.FlyDbAuthInterceptor;
+import com.flydb.interceptor.FlyDbWebInterceptor;
 import com.flydb.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,9 @@ import java.sql.SQLException;
 @Configuration
 public class FlyDBConfig implements WebMvcConfigurer {
     @Autowired
-    FlyDbWebInterceptor flyDbWebInterceptor;
+    FlyDbWebInterceptor webInterceptor;
+    @Autowired
+    FlyDbAuthInterceptor authInterceptor;
     @Autowired
     DataSource dataSource;
     @Autowired
@@ -31,8 +35,10 @@ public class FlyDBConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(flyDbWebInterceptor)
-                .addPathPatterns("/flydb/**");
+        registry.addInterceptor(webInterceptor).order(1).addPathPatterns("/flydb/**");
+        registry.addInterceptor(authInterceptor).order(2)
+                .addPathPatterns("/flydb/**")
+                .excludePathPatterns("/index", "/login");
     }
 
     @Bean
