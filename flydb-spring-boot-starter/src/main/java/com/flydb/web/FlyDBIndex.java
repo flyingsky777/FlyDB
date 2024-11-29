@@ -29,6 +29,7 @@ public class FlyDBIndex {
         if (StrUtil.isNotBlank(dto.getName()) && StrUtil.isNotBlank(dto.getPass())) {
             if (dto.getName().equals(properties.getAccount()) && dto.getPass().equals(properties.getPassword())) {
                 String token = Util.getToken(dto.getName(), dto.getPass());
+
                 return ResultVo.success(token);
             } else {
                 return ResultVo.error("账号或密码错误");
